@@ -1,0 +1,25 @@
+{
+  "version": "0.1.166",
+  "entry": "main.mjs",
+  "modules": [
+    "runtime.mjs",
+    "game-data.mjs",
+    "equipment.mjs"
+  ],
+  "stylesheet": "hud.css",
+  "schema": "schema.js",
+  "worldbook": "worldbook.json",
+  "changedWorldbookEntries": [
+    2,
+    12,
+    13,
+    14,
+    18,
+    19,
+    20
+  ],
+  "baseline": "e91008565fbb1b3c6ae2ddbbd3969b7e155ce528",
+  "worldbooks": [
+    "worldbook.json"
+  ]
+}
