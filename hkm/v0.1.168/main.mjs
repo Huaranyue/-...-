@@ -1,4 +1,4 @@
-import {mount} from './runtime.mjs';
+import {mount,createFishingHost} from './runtime.mjs';
 import {createCasinoHost} from './casino-ui.mjs';
 import {HUD_CSS} from './hud-style.mjs';
 
@@ -6,6 +6,7 @@ export function start({scriptWindow=globalThis.window}={}) {
   const window=scriptWindow.parent,document=window.document;
   const timers=new Set(),stops=[];
   const casino=createCasinoHost({window,document});
+  const fishing=createFishingHost({window,document});
   let disposed=false,current=null,queued=false,observer=null;
   const context=()=>window.SillyTavern?.getContext?.();
   const latest=()=>document.querySelector('#chat .mes[is_user="false"]:last-of-type') || [...document.querySelectorAll('#chat .mes[is_user="false"]')].at(-1);
@@ -32,6 +33,7 @@ export function start({scriptWindow=globalThis.window}={}) {
   const reconcile=()=>{
     if(disposed)return;
     casino.setContext(context()?.chatId);
+    fishing.setContext(context()?.chatId);
     const row=candidate();
     for(const message of document.querySelectorAll('#chat .mes[is_user="false"]')){
       const host=message.querySelector('[data-hkm-hosted="166"]');
@@ -42,7 +44,7 @@ export function start({scriptWindow=globalThis.window}={}) {
     if(current && row && current.row.host===row.host && current.row.messageId===row.messageId && current.row.chatId===row.chatId && !current.runtime.disposed)return;
     release();if(!row)return;delete row.host.dataset.hkmHistory;row.host.classList.add('hkm-reset-host');
     const retry=()=>{if(isCurrent(row)){release();reconcile();}};
-    const runtime=mount({document,window,scriptWindow,casino,host:row.host,messageId:row.messageId,isCurrent:()=>isCurrent(row),retry,report:error=>{
+    const runtime=mount({document,window,scriptWindow,casino,fishing,host:row.host,messageId:row.messageId,isCurrent:()=>isCurrent(row),retry,report:error=>{
       if(!isCurrent(row))return;
       release();status(row.host,'前端加载失败：'+(error?.message || String(error)),retry);
     }});
@@ -56,7 +58,7 @@ export function start({scriptWindow=globalThis.window}={}) {
   const ready=Promise.resolve().then(()=>{
     if(disposed)return;
     observer=new window.MutationObserver(records=>{
-      if(records.some(record=>!record.target.closest?.('.hkm-reset-host,.hkm-portal,.hkm-casino')))schedule();
+      if(records.some(record=>!record.target.closest?.('.hkm-reset-host,.hkm-portal,.hkm-casino,.hkm-fishing-host,.hkm-fishing-toggle')))schedule();
     });
     observer.observe(document.body,{subtree:true,childList:true});
     const ctx=context();
@@ -70,7 +72,7 @@ export function start({scriptWindow=globalThis.window}={}) {
     if(disposed)return;disposed=true;observer?.disconnect();
     for(const timer of timers)scriptWindow.clearTimeout(timer);timers.clear();
     for(const stop of stops.splice(0)){try{stop();}catch(_){}}
-    release();casino.dispose();link.remove();scriptWindow.removeEventListener('pagehide',dispose);
+    release();casino.dispose();fishing.dispose();link.remove();scriptWindow.removeEventListener('pagehide',dispose);
   };
   scriptWindow.addEventListener('pagehide',dispose,{once:true});
   return {ready,dispose};

@@ -1,6 +1,67 @@
 import {GAME_DATA} from './game-data.mjs';
 import {createEquipmentEngine} from './equipment.mjs';
 import {casinoDefaults,casinoAccount,casinoPatch,autoRepay,chipGuard,CHIP_NAME,CHIP_ID} from './casino-economy.mjs';
+export function createFishingHost({window,document}) {
+  const make=(tag,cls,text)=>{const node=document.createElement(tag);node.className=cls || '';if(text)node.textContent=text;return node;};
+  const host=make('div','hkm-portal hkm-fishing-host'),panel=make('section','hkm-fishing-panel hkm-fishing-wide'),top=make('div','hkm-fishing-top'),body=make('div','hkm-fishing-game');
+  const drag=make('button','hkm-fishing-drag','深水战术垂钓'),end=make('button','hkm-reset-mini','收杆'),gear=make('button','hkm-reset-mini','渔具装配'),hide=make('button','hkm-reset-mini','收起'),toggle=make('button','hkm-fishing-entry hkm-fishing-toggle','继续垂钓');
+  for(const button of [drag,end,gear,hide,toggle])button.type='button';
+  drag.setAttribute('aria-label','移动深水战术垂钓窗口');
+  panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','false');panel.setAttribute('aria-label','深水战术垂钓');panel.tabIndex=-1;panel.dataset.win='fishing';
+  toggle.setAttribute('aria-controls','hkm-persistent-fishing');panel.id='hkm-persistent-fishing';
+  top.append(drag,end,gear,hide);panel.append(top,body);host.append(panel,toggle);document.body.append(host);
+  let owner=null,chatId=null,view=null,collapsed=false,disposed=false,dragging=null,position=null;
+  const writable=()=>!!owner && owner.available();
+  const notify=()=>{if(view && owner?.layoutAvailable())owner.window({open:true,collapsed,left:position?.left,top:position?.top});};
+  const clamp=()=>{
+    if(!view || disposed)return;
+    const width=window.visualViewport?.width || window.innerWidth,height=window.visualViewport?.height || window.innerHeight;
+    if(!position)position={left:Math.max(8,(width-Math.min(1000,width-16))/2),top:Math.max(8,Math.min(64,height-80))};
+    const panelWidth=panel.getBoundingClientRect().width || Math.min(1000,width-16);
+    position.left=Math.max(8,Math.min(position.left,width-Math.min(panelWidth,width-16)-8));position.top=Math.max(8,Math.min(position.top,height-72));
+    panel.style.left=position.left+'px';panel.style.top=position.top+'px';panel.style.maxHeight=Math.max(64,height-position.top-8)+'px';
+    panel.style.setProperty('--hkm-fishing-canvas-height',Math.max(100,height-position.top-230)+'px');
+  };
+  const lock=()=>{
+    const enabled=writable(),playing=Boolean(owner?.active());
+    panel.hidden=!view || collapsed;toggle.hidden=!view || !collapsed;toggle.setAttribute('aria-expanded',String(!!view && !collapsed));
+    panel.dataset.awaitingReply=String(!enabled);panel.setAttribute('aria-busy',String(!enabled));body.inert=!enabled;
+    end.disabled=!enabled;gear.disabled=!enabled || playing;
+  };
+  const show=()=>{if(!view)return;collapsed=false;clamp();lock();notify();panel.focus();};
+  const collapse=()=>{if(!view)return;view.engine?.save();collapsed=true;lock();notify();toggle.focus();};
+  const close=()=>{
+    const wasOpen=Boolean(view);view?.engine?.dispose();view=null;collapsed=false;body.replaceChildren();panel.hidden=true;toggle.hidden=true;
+    if(wasOpen && owner?.layoutAvailable())owner.window({open:false,collapsed:false,left:position?.left,top:position?.top});
+  };
+  const act=fn=>{const api=owner;if(!api || !api.available())return;Promise.resolve().then(()=>{if(owner===api && api.available())return api[fn]();}).catch(error=>{if(owner===api)api.error(error);});};
+  end.addEventListener('click',()=>act('end'));gear.addEventListener('click',()=>act('gear'));hide.addEventListener('click',collapse);toggle.addEventListener('click',show);
+  drag.addEventListener('pointerdown',event=>{if(event.button!==0 || !view)return;event.preventDefault();clamp();dragging={id:event.pointerId,x:event.clientX,y:event.clientY,...position};drag.setPointerCapture?.(event.pointerId);});
+  const move=event=>{if(!dragging || event.pointerId!==dragging.id)return;position={left:dragging.left+event.clientX-dragging.x,top:dragging.top+event.clientY-dragging.y};clamp();};
+  const stop=event=>{if(!dragging || event.pointerId!==dragging.id)return;dragging=null;notify();};
+  const keys=event=>{
+    if(event.key==='Escape' && view && !collapsed && panel.contains(event.target) && !document.querySelector('dialog[open]')){event.preventDefault();event.stopPropagation();collapse();}
+    if(event.target===drag && ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key)){event.preventDefault();clamp();const step=event.shiftKey?40:10;position.left+=(event.key==='ArrowRight'?step:event.key==='ArrowLeft'?-step:0);position.top+=(event.key==='ArrowDown'?step:event.key==='ArrowUp'?-step:0);clamp();notify();}
+  };
+  document.addEventListener('pointermove',move);document.addEventListener('pointerup',stop);document.addEventListener('pointercancel',stop);document.addEventListener('keydown',keys);
+  window.addEventListener('resize',clamp);window.visualViewport?.addEventListener('resize',clamp);lock();
+  return {
+    setContext(next){if(next===chatId)return;close();owner=null;chatId=next;position=null;},
+    async bind(api){if(disposed || api.chatId!==chatId)return;owner=api;if(view && !api.keep(view.meta))close();lock();if((view || api.restore()) && api.available())await api.open(true);lock();},
+    unbind(api){if(owner!==api)return;view?.engine?.save();owner=null;lock();},
+    prepare(meta,preserve=false){
+      if(view && view.key!==meta.key)close();
+      if(!view){view={key:meta.key,meta,engine:null,body,panel};const saved=owner?.windowState();if(saved?.open){collapsed=Boolean(saved.collapsed);if(Number.isFinite(saved.left)&&Number.isFinite(saved.top))position={left:saved.left,top:saved.top};}}
+      if(!preserve)collapsed=false;clamp();lock();notify();return view;
+    },
+    use(engine){if(view)view.engine=engine;lock();},
+    current:()=>view,
+    guard:()=>!!view && !collapsed && writable(),
+    sync(api,keep){if(owner!==api)return;if(view && !keep)close();lock();},
+    lock,show,close(api){if(api && owner!==api)return;close();},
+    dispose(){if(disposed)return;close();disposed=true;owner=null;document.removeEventListener('pointermove',move);document.removeEventListener('pointerup',stop);document.removeEventListener('pointercancel',stop);document.removeEventListener('keydown',keys);window.removeEventListener('resize',clamp);window.visualViewport?.removeEventListener('resize',clamp);host.remove();},
+  };
+}
 export function mount(env) {
   const document=env.document,window=env.window,getCurrentMessageId=()=>env.messageId;
   const host=env.host,disposers=[],styles=new Set(),timeouts=new Set(),intervals=new Set(),frames=new Set();
@@ -2280,6 +2341,7 @@ function isLatestOwner({mine,assistantIds}) {
   const hkmTurnSyncUI = () => {
     const locked = hkmTurnLocked();
     env.casino?.lock();
+    env.fishing?.lock();
     for(const node of [host,hkmPortal])node.classList.toggle('hkm-turn-locked',locked);
     root.inert = locked;
     root.dataset.awaitingReply = String(locked);
@@ -4937,26 +4999,9 @@ const HkmUpgrade = (() => {
     const grid = make('div', 'hkm-search-grid');
     const board = make('div', 'hkm-search-board');
     grid.append(board);
-    const maxSpan = Math.max(1, ...found.map(row => hkmSearchSpan(row.item)));
-    let layoutKey = '';
-    const layout = () => {
-      const style = window.getComputedStyle(grid), gap = parseFloat(window.getComputedStyle(board).columnGap) || 8;
-      const available = Math.max(118, grid.clientWidth - (parseFloat(style.paddingLeft) || 0) - (parseFloat(style.paddingRight) || 0));
-      const columns = Math.max(1, Math.floor((available + gap) / (118 + gap)));
-      const key = columns + ':' + available + ':' + gap;
-      if (layoutKey === key) return;
-      layoutKey = key;
-      board.style.setProperty('--search-columns', String(Math.max(maxSpan, columns)));
-      board.style.setProperty('--search-cell-width', Math.max(118, (available - gap * (columns - 1)) / columns) + 'px');
-      slots.forEach((slot, index) => {
-        const span = hkmSearchSpan(found[index].item);
-        slot.style.gridColumn = (span >= columns ? '1 / ' : '') + 'span ' + span;
-      });
-    };
-    const layoutObserver = typeof ResizeObserver === 'function' ? new ResizeObserver(layout) : null;
     const slots = found.map((row, index) => {
       const slot = make('div', 'hkm-search-slot');
-      slot.style.setProperty('--search-span', String(hkmSearchSpan(row.item)));
+      slot.dataset.searchSpan=String(hkmSearchSpan(row.item));
       slot.setAttribute('aria-label', '未搜索物品 ' + (index + 1));
       slot.append(make('span', 'hkm-search-index', String(index + 1).padStart(2, '0')), make('span', 'hkm-search-cover'));
       board.append(slot);
@@ -4975,8 +5020,6 @@ const HkmUpgrade = (() => {
       if (disposed) return;
       disposed = true;
       clearTimeout(searchTimer);
-      layoutObserver?.disconnect();
-      window.removeEventListener('resize', layout);
       clearInterval(ownerTimer);
       document.removeEventListener('keydown', onKey, true);
       mask.remove();
@@ -5035,9 +5078,9 @@ const HkmUpgrade = (() => {
         visual.append(image);
         if (image.complete) loaded();
       }
-      const foot = make('div', 'hkm-search-foot');
-      foot.append(make('span', 'hkm-search-rarity', rarity), make('span', 'hkm-search-qty', '×' + quantity));
-      slot.append(visual, make('div', 'hkm-search-name', textOf(item.name)), foot);
+      const foot = make('div', 'hkm-search-foot hkm-search-meta-row'),name=make('span','hkm-search-name',textOf(item.name)),rarityLabel=make('span','hkm-search-rarity',rarity),qty=make('span','hkm-search-qty','×'+quantity);
+      name.title=textOf(item.name);rarityLabel.title=rarity;qty.title='数量 '+quantity;
+      foot.append(name,rarityLabel,qty);slot.append(visual,foot);
       count.textContent = (index + 1) + ' / ' + found.length;
     };
     const revealNext = () => {
@@ -5068,9 +5111,6 @@ const HkmUpgrade = (() => {
     });
     document.addEventListener('keydown', onKey, true);
     hkmPortal.append(mask);
-    layout();
-    if (layoutObserver) layoutObserver.observe(grid);
-    else window.addEventListener('resize', layout);
     panel.focus();
     ownerTimer = setInterval(checkOwner, 250);
     if (found.length) begin();
@@ -11974,7 +12014,9 @@ const HkmUpgrade = (() => {
   try{if(window.parent.innerHeight>0)hkmViewport=window.parent;}catch(_){}
   const hkmResizeHud=()=>root.style.setProperty('--hkm-hud-height',Math.max(240,Math.round((hkmViewport.visualViewport?.height || hkmViewport.innerHeight)*.82))+'px');
   hkmResizeHud();hkmViewport.addEventListener('resize',hkmResizeHud);hkmViewport.visualViewport?.addEventListener('resize',hkmResizeHud);disposers.push(()=>{hkmViewport.removeEventListener('resize',hkmResizeHud);hkmViewport.visualViewport?.removeEventListener('resize',hkmResizeHud);});
-  root.insertBefore(hkmMain,body);root.insertBefore(hkmSub,body);body.append(hkmContent);
+  const hkmCommandDeck=make('div','hkm-command-deck'),hkmCommandPrimary=make('div','hkm-command-primary'),hkmCommandEnemies=make('aside','hkm-command-enemies');
+  hkmCommandEnemies.setAttribute('aria-label','当前区域敌人');hkmCommandEnemies.hidden=true;
+  hkmCommandPrimary.append(head,hkmMain,hkmSub,toolbar);hkmCommandDeck.append(hkmCommandPrimary,hkmCommandEnemies);root.insertBefore(hkmCommandDeck,body);body.append(hkmContent);
   titleBox.firstChild.textContent='哈基米行动';
   const hkmVitals=make('div','hkm-vitals');titleBox.append(roundLabel,hkmVitals);
   const HkmTutorial = (() => {
@@ -12198,9 +12240,11 @@ const HkmUpgrade = (() => {
     hkmContent.setAttribute('aria-labelledby','hkm-sub-'+sub);hkmContent.dataset.page=key;
     hkmParking.append(mapPanel.box,statePanel.box,characterPanel.box,equipmentPanel.box,bagPanel.box,enemyPanel.box,specialPanel.box,taskPanel.box,statsPanel.box,stashPanel.box,shopPanel.box,cartPanel.box,hkmHomePanel.box,hkmFacilitiesPanel.box,scatterBox,bagStatusBox,usedPanel);
     hkmContent.replaceChildren();
+    const commandEnemies=mission && key==='inside:action';hkmCommandEnemies.hidden=!commandEnemies;hkmCommandDeck.dataset.enemies=String(commandEnemies);
+    if(commandEnemies)hkmCommandEnemies.replaceChildren(enemyPanel.box);
     if(hkmPage.main==='inside'&&!mission){hkmEmpty.replaceChildren(make('p','','当前没有进行中的对局'),hkmButton('前往出行',()=>hkmSwitch('outside','travel')));hkmContent.append(hkmEmpty);}
     else if(sub==='action'){
-      hkmActionLeft.replaceChildren(statePanel.box,mapPanel.box);hkmActionRight.replaceChildren(specialPanel.box,enemyPanel.box);hkmContent.append(hkmAction,scatterBox);
+      hkmActionLeft.replaceChildren(statePanel.box,mapPanel.box);hkmActionRight.replaceChildren(specialPanel.box);hkmContent.append(hkmAction,scatterBox);
     }else if(sub==='travel'){hkmContent.append(make('h2','','出行'),mapPanel.box,specialPanel.box);}
     else if(sub==='prepare'){hkmPrepareLeft.replaceChildren(characterPanel.box,equipmentPanel.box);hkmPrepareRight.replaceChildren(bagPanel.box,bagStatusBox,usedPanel);hkmContent.append(hkmPrepareHeading,hkmPrepare,scatterBox);}
     else if(sub==='tasks'){hkmContent.append(hkmTaskHeading,taskPanel.box);}
@@ -12515,7 +12559,6 @@ const HkmUpgrade = (() => {
       finally { hkm098Busy = false; }
       hkm098RefreshQueued = true; return;
     }
-    if (!hudReadOnly && hkmFishingEngine && hkmFishingValid(stat) && (!state.fishing?.cast?.active || state.fishing.cast.runId===hkm098RunId(state.run))) return;
     if (!hudReadOnly) {
       const migrated=HkmSave.migrateGoogle(stat);
       if (JSON.stringify(migrated)!==JSON.stringify(stat)) {
@@ -12681,6 +12724,8 @@ const HkmUpgrade = (() => {
     else if (!searchBusy && !moveBusy && liveStatus.textContent === '正在读取干员状态…') setStatus('当前位于 ' + mapName + ' / ' + area + '。');
     if (stateChanged) saveFrontendState(state);
     env.casino?.sync(hkmCasinoReadSnapshot(stat),casinoApi);
+    const fishingView=env.fishing?.current();
+    env.fishing?.sync(fishingApi,!!state.run && state.run.map==='魔鬼海' && stat.场景?.地图==='魔鬼海' && (!fishingView || fishingView.meta.runId===hkm098RunId(state.run) && fishingView.meta.area===stat.场景?.区域) && !HkmLifecycle.dead(stat));
 
 
     hudMakeDraggable(debugPanel, 'debug');
@@ -13295,7 +13340,7 @@ const HkmUpgrade = (() => {
           if(!busy){update(dt);saveClock+=dt;if(saveClock>=.5){saveClock=0;save();}}
           else if(state==='casting'){cast.progress=Math.min(.95,cast.progress+dt/.85);positionCast(1-Math.pow(1-cast.progress,3));updateUi();}
         }
-        draw();raf=requestAnimationFrame(frame);
+        draw();raf=window.requestAnimationFrame(frame);
       }
       const point=e=>{const r=canvas.getBoundingClientRect();mouse.x=(e.clientX-r.left)/r.width*W;mouse.y=(e.clientY-r.top)/r.height*H;mouse.inside=true;};
       listen(canvas,'pointermove',point);
@@ -13306,9 +13351,11 @@ const HkmUpgrade = (() => {
       const depthOut=hkmCreateElement('span');depthOut.textContent='最大深度 '+config.depth+'%';mount.querySelector('.hkm-fishing-readouts').append(depthOut);
       const hint=hkmCreateElement('p');hint.textContent='左键点击水域下钩；未咬钩时再点可收回浮标并继续钓鱼。角力中左键点击收力，脱力时收至80px以内钓起；满线时朝鱼线相反象限收力可主动脱钩。暂离后可继续；收杆结束垂钓并发送汇总。';mount.append(hint);
       if(options.restore)restore(options.restore);else updateUi();
-      raf=requestAnimationFrame(frame);
+      raf=window.requestAnimationFrame(frame);
       return {
         click:handleLeftClick,
+        save,
+        rebind:next=>{Object.assign(config,next.config);Object.assign(options,next);last=performance.now();},
         targets:()=>fish.filter(f=>!f.dead && !f.fleeing).map(f=>f.hidden.uid),
         recall:()=>{if(busy)throw Error('钓鱼结算中，请稍后收杆。');return endFight(false,'已收杆。',true);},
         settle:(success,durability,wear,broken)=>{
@@ -13319,7 +13366,7 @@ const HkmUpgrade = (() => {
           paused=false;busy=false;last=performance.now();setState(lineBroken?'broken':'ready');
         },
         resume:()=>{if(!options.guard())return;if(['success','lost','broken'].includes(state)){busy=false;endFight(state==='success');}else{paused=false;last=performance.now();}},
-        dispose:()=>{save();disposed=true;cancelAnimationFrame(raf);events.forEach(fn=>fn());}
+        dispose:()=>{save();disposed=true;window.cancelAnimationFrame(raf);events.forEach(fn=>fn());}
       };
     };
 
@@ -13404,6 +13451,7 @@ const HkmUpgrade = (() => {
   };
   const hkmFishingSync = async stat => {
     if(hudReadOnly)return false;
+    const view=env.fishing?.current();if(view){env.fishing.sync(fishingApi,fishingApi.keep(view.meta));if(!env.fishing.current())hkmFishingEngine=null;}
     const patch=hkmFishingPreparePatch(stat,{});
     const keychain=hkmKeyPrunedChain(state.keychain);
     let after=JSON.stringify(keychain)!==JSON.stringify(state.keychain) ? {keychain}:{};
@@ -13451,7 +13499,7 @@ const HkmUpgrade = (() => {
   };
   const hkmFishingClose = () => {
     const wasPlaying=Boolean(hkmFishingEngine);
-    hkmFishingEngine?.dispose();hkmFishingEngine=null;
+    if(env.fishing)env.fishing.close(fishingApi);else hkmFishingEngine?.dispose();hkmFishingEngine=null;
     hkmFishingWindow?.remove();hkmFishingWindow=null;
     if(wasPlaying && !hkm098Busy && !hkmFishingBusy)void refresh().catch(error=>setStatus(error.message));
   };
@@ -13665,24 +13713,33 @@ const HkmUpgrade = (() => {
       front.session.settlementIds.push(id);
       await hkm098Transact(id,patch,{run,fishing:front,aiLog,insuranceLog:soundLog,achievements:HkmAchievements.observeFishing(state.achievements,fishingRow)});
       hkmFishingRenderClaims({...stat,...patch});
+      const view=env.fishing?.current();if(view)view.meta.lastSettledCast=cast.id;
       if(success && target.type==='monster')hkmFishingClose();
       else hkmFishingEngine?.settle(success,durability,wear,broken);
       currentStatSnapshot=null;await refresh();setStatus(log);
       if(success && target.type==='monster')await hkmFishingSendReport();
     } finally {hkmFishingBusy=false;}
   };
-  const hkmFishingOpen = async () => {
+  const hkmFishingOpen = async (preserve=false) => {
+    preserve=preserve===true;
     const stat=await currentStat();hkmFishingGuard(stat);
     const rod=hkmFishingEquipped(stat);if(!rod)throw Error('请先把鱼竿装备到奇物栏。');
-    const panel=hkmFishingPanel('深水战术垂钓',true),body=make('div','hkm-fishing-game');panel.append(body);
+    let view=null,panel,body;
+    if(env.fishing){
+      hkmFishingWindow?.remove();hkmFishingWindow=null;
+      const runId=hkm098RunId(state.run),area=stat.场景.区域;
+      view=env.fishing.prepare({key:JSON.stringify([runId,area,rod.uid,rod.line?.uid || null]),runId,area,rodUid:rod.uid,targets:HkmFishing.copy(state.fishing?.cast?.active?state.fishing.cast.targets:{}),shoalId:Date.now()+'-'+(++hkm095QueueSerial),shoalSerial:0},preserve===true);
+      panel=view.panel;body=view.body;hkmFishingEngine=view.engine;
+    }else{panel=hkmFishingPanel('深水战术垂钓',true);body=make('div','hkm-fishing-game');panel.append(body);}
     const initial=state.fishing?.cast?.active ? state.fishing.cast.snapshot:null;
     const line=itemById(rod.line?.itemId)?.fishingGear;
-    if(!line || (!initial && (!rod.hook || !rod.baitId || rod.line.durability<=0))){panel.append(make('p','','请先装配可用鱼线、鱼钩和饵料。'));const button=make('button','hkm-reset-mini','渔具装配');button.addEventListener('click',hudAction(()=>hkmFishingOpenMods(itemById(rod.itemId).name,'装备',rod.uid)));panel.append(button);return;}
-    const gearButton=make('button','hkm-reset-mini','渔具装配');panel.append(gearButton);
-    gearButton.disabled=Boolean(state.fishing?.cast?.active);gearButton.addEventListener('click',hudAction(()=>hkmFishingOpenMods(itemById(rod.itemId).name,'装备',rod.uid)));
+    if(!line || (!initial && !hkmFishingEngine && (!rod.hook || !rod.baitId || rod.line.durability<=0))){body.replaceChildren(make('p','','请先装配可用鱼线、鱼钩和饵料。'));if(!env.fishing){const button=make('button','hkm-reset-mini','渔具装配');button.addEventListener('click',hudAction(()=>hkmFishingOpenMods(itemById(rod.itemId).name,'装备',rod.uid)));panel.append(button);}return;}
+    const gearButton=env.fishing?panel.querySelector('.hkm-fishing-top button:nth-child(3)'):make('button','hkm-reset-mini','渔具装配');
+    if(!env.fishing){panel.append(gearButton);gearButton.disabled=Boolean(state.fishing?.cast?.active);gearButton.addEventListener('click',hudAction(()=>hkmFishingOpenMods(itemById(rod.itemId).name,'装备',rod.uid)));}
     const config={depth:itemById(rod.hook?.itemId)?.fishingGear.maxDepthPercent || 50,line:line.maxLengthPx,power:HkmFishing.power(GAME_DATA,rod,stat),durability:line.maxDurability,currentDurability:rod.line.durability,wear:rod.line.wear,wearPerSuccess:line.wearPerSuccess,standoffBonus:line.standoffBonusSeconds};
-    const shoalTargets=HkmFishing.copy(state.fishing?.cast?.active ? state.fishing.cast.targets:{});
-    const shoalId=Date.now()+'-'+(++hkm095QueueSerial);let shoalSerial=0;
+    const shoal=view?.meta || {targets:HkmFishing.copy(state.fishing?.cast?.active?state.fishing.cast.targets:{}),shoalId:Date.now()+'-'+(++hkm095QueueSerial),shoalSerial:0};
+    const shoalTargets=shoal.targets;
+    if(state.fishing?.cast?.active)Object.assign(shoalTargets,state.fishing.cast.targets);
     const ensureCast=async()=>{
       if(hkmFishingBusy || hkmFishingEnding)return false;
       if(state.fishing?.cast?.active)return true;
@@ -13705,15 +13762,15 @@ const HkmUpgrade = (() => {
         front.cast={id,active:true,runId:hkm098RunId(run),area:live.场景.区域,rodUid:rod.uid,lineUid:current.line.uid,baitId:current.baitId,baitConsumed,roundPolicy:'interruption',targets:HkmFishing.copy(shoalTargets),targetSerial:0,snapshot:null};
         front.session.settlementIds.push(id+':cast');
         await hkm098Transact(id+':cast',{背包:{...asObject(live.背包),携带收藏品:bag}},{fishing:front});
-        gearButton.disabled=true;hkmFishingRenderClaims(live);await refresh();return true;
+        shoal.castId=id;gearButton.disabled=true;hkmFishingRenderClaims(live);await refresh();return true;
       }finally{hkmFishingBusy=false;}
     };
-    hkmFishingEngine=HkmFishingGame(body,{
+    const options={
       config,
       authorize:ensureCast,
       generate:()=>{
         hkm098AssertOwner();
-        const target=HkmFishing.rollTarget(GAME_DATA,'魔鬼海',shoalId+'-'+(++shoalSerial));
+        const target=HkmFishing.rollTarget(GAME_DATA,'魔鬼海',shoal.shoalId+'-'+(++shoal.shoalSerial));
         shoalTargets[target.uid]=target;
         const cast=state.fishing?.cast;
         if(cast?.active){cast.targets[target.uid]=target;cast.targetSerial++;}
@@ -13722,9 +13779,14 @@ const HkmUpgrade = (() => {
       snapshot:hkmFishingPersistGame,
       restore:initial,
       finish:async(...args)=>{try{await hkmFishingFinish(...args);}finally{if(panel.isConnected && !state.fishing?.cast?.active)gearButton.disabled=false;}},
-      guard:()=>{try{hkm098AssertOwner();return !hkmFishingEnding && hkmFishingValid(currentStatSnapshot) && !HkmSave.pending();}catch(_){return false;}},
+      guard:()=>{try{hkm098AssertOwner();return !hkmFishingEnding && (!env.fishing || !hkmFishingWindow) && hkmFishingValid(currentStatSnapshot) && !HkmSave.pending() && (!env.fishing || env.fishing.guard());}catch(_){return false;}},
       error:error=>setStatus(error.message),
-    });
+    };
+    if(hkmFishingEngine && view)hkmFishingEngine.rebind(options);else hkmFishingEngine=HkmFishingGame(body,options);
+    env.fishing?.use(hkmFishingEngine);
+    const settled=state.fishing?.cast;
+    if(view && settled?.settled && !settled.active && shoal.castId===settled.id && shoal.lastSettledCast!==settled.id){shoal.lastSettledCast=settled.id;hkmFishingEngine.settle(settled.outcome==='success',rod.line?.durability || 0,rod.line?.wear || 0,settled.outcome==='broken');}
+    if(!preserve && env.fishing)env.fishing.show();
   };
   const hkmFishingCollectKills = async stat => {
     if(!state.run || hudReadOnly)return false;
@@ -13773,7 +13835,7 @@ const HkmUpgrade = (() => {
     try{window.parent.document.addEventListener(type,hkmFishingControlGuard,true);}catch(_){}
     disposers.push(()=>{document.removeEventListener(type,hkmFishingControlGuard,true);try{window.parent.document.removeEventListener(type,hkmFishingControlGuard,true);}catch(_){}});
   }
-  disposers.push(hkmFishingClose);
+  disposers.push(()=>{if(env.fishing){env.fishing.unbind(fishingApi);hkmFishingEngine=null;hkmFishingWindow?.remove();hkmFishingWindow=null;}else hkmFishingClose();});
 
   let hkm098Refreshing = false, hkm098RefreshQueued = false, hkm098RefreshTimer = null;
   const refresh = async () => {
@@ -13785,6 +13847,7 @@ const HkmUpgrade = (() => {
     finally {
       hkm098Refreshing = false;
       env.casino?.lock();
+    env.fishing?.lock();
       if(disposed)return;
       if (currentStatSnapshot && !hkm098Busy) hkm140BagSync(currentStatSnapshot);
       hkm103ScheduleSave();
@@ -13811,6 +13874,7 @@ const HkmUpgrade = (() => {
       hkm098Busy=true;
       try {
         await hkm099WriteTail;
+        hkmFishingClose();
         await HkmSave.restore(save,{scope:hkm103Scope,target:mvuMessageId(),check:()=>hkm098AssertOwner(true)});
         const next=readFrontendState();for(const k of Object.keys(state))delete state[k];Object.assign(state,next);
         currentStatSnapshot=null;hkm103AutoSignature='';hkm098CloseDeath();
@@ -13818,6 +13882,7 @@ const HkmUpgrade = (() => {
         installNativeQuestInterceptor();
       } finally {hkm098Busy=false;}
       await refresh();
+      await env.fishing?.bind(fishingApi);
     }
   });
   const hkm103AutoInterval=setInterval(hkm103ScheduleSave,5000);
@@ -13843,10 +13908,23 @@ const HkmUpgrade = (() => {
     send:(text,uid)=>sendFrontendUserMessage(text+'\n[赌场结算编号：'+uid+']',{action:'casino_game',matchId:uid},{casinoOutboxId:uid,coveredSettlementIds:['casino:'+uid+':finish']}),
   };
   disposers.push(()=>env.casino?.unbind(casinoApi));
+  const fishingApi={chatId:hkm098OwnerChat,
+    available:()=>!disposed && isLatestHudLayer() && !hudReadOnly && !hkmTurnLocked() && !hkm098Busy && !hkm098Refreshing && !hkm098Locked() && !HkmSave.pending() && !hkmFishingWindow && hkmFishingValid(currentStatSnapshot || {}),
+    layoutAvailable:()=>!disposed && env.isCurrent() && !hudReadOnly && !hkm098Busy && !HkmSave.pending(),
+    keep:meta=>!!state.run && state.run.map==='魔鬼海' && currentStatSnapshot?.场景?.地图==='魔鬼海' && meta.runId===hkm098RunId(state.run) && meta.area===currentStatSnapshot.场景.区域 && !HkmLifecycle.dead(currentStatSnapshot),
+    active:()=>Boolean(state.fishing?.cast?.active),
+    restore:()=>Boolean(state.fishing?.cast?.active && state.fishing.cast.snapshot),
+    windowState:()=>state.fishing?.window,
+    window:info=>{state.fishing={...asObject(state.fishing),window:info};saveFrontendState(state,true);},
+    open:hkmFishingOpen,end:hkmFishingEnd,
+    gear:async()=>{const stat=await currentStat(),rod=hkmFishingEquipped(stat);if(!rod)throw Error('请先装备鱼竿。');await hkmFishingOpenMods(itemById(rod.itemId).name,'装备',rod.uid);},
+    error:error=>setStatus(error.message),
+  };
   try {
     await refresh();
     if(disposed)return;
     await env.casino?.bind(casinoApi);
+    await env.fishing?.bind(fishingApi);
     if (!Object.keys(asObject(currentStatSnapshot)).length) {
       setStatus('正在等待开局变量就绪（网络慢时 MVU 与变量结构脚本要下载一会儿）…');
       waitForVariables().then(ok => {
