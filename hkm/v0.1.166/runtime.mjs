@@ -3605,7 +3605,7 @@ const hkm163AiCast = (source,units,stat,front,clock,narrative=false) => {
   source.effects.aiSkillDialogue=clock;
   const names=offer.targets.map(unit=>unit.name).join('、');
   const text=source.name+'发动「'+offer.skill.name+'」'+(offer.skill.name==='定海一棒'?'（'+offer.mode+'）':'')+'，目标：'+names+'。\n'+lines.join('\n');
-  return {offer,lines,text,record:{id:'AI-SKILL:'+hkm098RunId(front.run)+':'+hkmTurnOrigin+':'+source.id,text:'<HkmActiveSkill>\n'+text+(narrative?'\n目标ID：'+offer.targets.map(unit=>unit.id).join('、')+'。战备价值：'+offer.gearValue+'。冷却与持续对话计数已登记；本次命中、伤害、费用、减伤与眩晕按技能和战斗规则在本轮叙事中处理。持续对话回血由前端处理，不重复更新。':'\n上述效果已经结算，无需重复修改血量、哈基币或状态。')+'\n</HkmActiveSkill>',item:source.id+':'+offer.token,useClass:'aiActiveSkill',roundKey:hudRoundKey(),sent:false,undo:{}}};
+  return {offer,lines,text,record:{id:'AI-SKILL:'+hkm098RunId(front.run)+':'+hkmTurnOrigin+':'+source.id,text:'<HkmActiveSkill>\n'+text+(narrative?'\n目标ID：'+offer.targets.map(unit=>unit.id).join('、')+'。战备价值：'+offer.gearValue+'。冷却与持续对话计数已登记；本次命中、伤害、费用、减伤与眩晕按技能和战斗规则在本轮叙事中处理。技能明示的固定或比例伤害替代攻击骰，作为折前伤害，仅防御力按DN掷骰减免。持续对话回血由前端处理，不重复更新。':'\n上述效果已经结算，无需重复修改血量、哈基币或状态。')+'\n</HkmActiveSkill>',item:source.id+':'+offer.token,useClass:'aiActiveSkill',roundKey:hudRoundKey(),sent:false,undo:{}}};
 };
 const hkm163AiHit = (source,target,ambush=false) => {
   const map=state.run?.map,area=source.region,clock=hudDialogueCount()+1;
@@ -3785,7 +3785,7 @@ const hkm130ActivateSkill = async (itemId, skillName) => {
   const stat=await currentStat(),offer=hkm130SkillAvailability(item,skill,stat);
   if(!offer.ok)throw Error(offer.label);
   const plan=hkm163SkillPlan(stat,item,skill,selection),id='skill:'+Date.now()+':'+(++hkm095QueueSerial);
-  const text='<HkmActiveSkill>\n主角发动「'+skill.name+'」。\n'+plan.lines.join('\n')+'\n冷却与持续对话计数已登记；本次命中、伤害、费用、减伤与眩晕按技能和战斗规则在本轮叙事中处理。持续对话回血由前端处理，不重复更新。\n</HkmActiveSkill>';
+  const text='<HkmActiveSkill>\n主角发动「'+skill.name+'」。\n'+plan.lines.join('\n')+'\n冷却与持续对话计数已登记；本次命中、伤害、费用、减伤与眩晕按技能和战斗规则在本轮叙事中处理。技能明示的固定或比例伤害替代攻击骰，作为折前伤害，仅防御力按DN掷骰减免。持续对话回血由前端处理，不重复更新。\n</HkmActiveSkill>';
   const record={id,item:offer.token,text,useClass:'activeSkill',roundKey:hudRoundKey(),sent:false,undo:{}};
   await hkm098Transact(id,plan.patch,{...plan.after,skillCooldowns:{...asObject(state.skillCooldowns),[offer.token]:{unit:offer.cooldown.unit,readyAt:offer.clocks[offer.cooldown.unit]+offer.cooldown.amount}},usePending:useRecordsOf(state.usePending).concat(record)},'', '',1,stat);
   hkm163ProcessDeaths();setStatus('已准备发动「'+skill.name+'」。');
