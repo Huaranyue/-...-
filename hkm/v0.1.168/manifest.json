@@ -1,0 +1,27 @@
+{
+  "version": "0.1.168",
+  "entry": "main.mjs",
+  "modules": [
+    "runtime.mjs",
+    "game-data.mjs",
+    "equipment.mjs",
+    "casino-economy.mjs",
+    "casino-games.mjs",
+    "casino-arcade-data.mjs",
+    "casino-ui.mjs",
+    "hud-style.mjs"
+  ],
+  "stylesheet": "hud.css",
+  "schema": "schema.js",
+  "worldbook": "worldbook.json",
+  "opening": "opening.html",
+  "worldbooks": [
+    "worldbook.json"
+  ],
+  "runtimeCommit": "a2058a08641a7b90adc87e480b68c8a62184db4e",
+  "card": "搜打撤一定要吃鸡...吧 ？v0.1.168-战术赌场版-GitHub加载版.json",
+  "arcadeSources": {
+    "roulette": "arcade/roulette.html",
+    "assembly": "arcade/assembly.html"
+  }
+}
