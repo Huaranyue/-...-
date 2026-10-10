@@ -8,6 +8,7 @@
     "casino-economy.mjs",
     "casino-games.mjs",
     "casino-arcade-data.mjs",
+    "casino-visuals.mjs",
     "casino-ui.mjs",
     "hud-style.mjs"
   ],
@@ -18,8 +19,8 @@
   "worldbooks": [
     "worldbook.json"
   ],
-  "runtimeCommit": "a2058a08641a7b90adc87e480b68c8a62184db4e",
-  "card": "搜打撤一定要吃鸡...吧 ？v0.1.168-战术赌场版-GitHub加载版.json",
+  "runtimeCommit": "f61806456bf449a9a9463965c61f1e6a7c174990",
+  "card": "搜打撤一定要吃鸡...吧 ？v0.1.168-战术赌场版-界面修订-GitHub加载版.json",
   "arcadeSources": {
     "roulette": "arcade/roulette.html",
     "assembly": "arcade/assembly.html"

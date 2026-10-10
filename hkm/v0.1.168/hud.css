@@ -657,3 +657,44 @@
 @media(prefers-reduced-motion:reduce){.hkm-reset-host *,.hkm-portal *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 .hkm-reset-host .hkm-action-summary .hkm-reset-extended-slot{grid-column:auto}
 @container hkm-hud (max-width:640px){.hkm-reset-host .hkm-main-tabs button,.hkm-reset-host .hkm-sub-tabs button{min-height:36px}.hkm-reset-host .hkm-action-summary .hkm-reset-extended-toggle,.hkm-reset-host .hkm-action-summary .hkm-reset-extended-gear{width:32px;height:32px;min-width:32px;min-height:32px}.hkm-reset-host .hkm-action-summary .hkm-reset-extended-options{position:static;width:min(280px,calc(100cqi - 48px));max-width:100%;margin-top:4px;box-shadow:none}}
+
+.hkm-portal .hkm-search-panel{width:fit-content;min-width:min(280px,calc(100vw - 16px));max-width:min(920px,calc(100vw - 16px));height:auto}
+.hkm-portal .hkm-search-panel .hkm-search-board{display:flex;flex-wrap:wrap;align-items:flex-start;align-content:flex-start;gap:6px;width:100%;min-width:0}
+.hkm-portal .hkm-search-panel .hkm-search-slot{flex:0 0 auto;width:104px;height:112px;min-height:0;max-width:100%;display:flex;flex-direction:column}
+.hkm-portal .hkm-search-panel .hkm-search-slot[data-search-span="2"]{width:148px;height:194px}
+.hkm-portal .hkm-search-panel .hkm-search-slot[data-search-span="3"]{width:222px;height:280px}
+.hkm-portal .hkm-search-panel .hkm-search-visual{position:relative;flex:1 1 0;min-height:0;width:100%;height:auto;padding:0}
+.hkm-portal .hkm-search-panel .hkm-search-visual>img,.hkm-portal .hkm-search-panel .hkm-search-visual>svg{position:absolute;inset:4px 5px 2px;width:calc(100% - 10px);height:calc(100% - 6px);min-width:0;min-height:0;max-width:none;max-height:none;object-fit:contain;filter:drop-shadow(0 3px 5px #0007)}
+.hkm-portal .hkm-search-panel .hkm-search-visual [hidden]{display:none!important}
+.hkm-portal .hkm-search-panel .hkm-search-meta-row{display:flex;align-items:center;gap:4px;flex:0 0 auto;min-width:0;min-height:24px;padding:4px 6px 5px}
+.hkm-portal .hkm-search-panel .hkm-search-name{flex:1 1 auto;min-width:0;padding:0;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;font-size:11px;line-height:1.3}
+.hkm-portal .hkm-search-panel .hkm-search-rarity{flex:0 0 auto;font-size:10px;line-height:1.3;white-space:nowrap}
+.hkm-portal .hkm-search-panel .hkm-search-qty{position:absolute;right:5px;top:4px;z-index:2;font-size:10px;line-height:1.3;padding:2px 4px;border-radius:2px;background:#111b0ccd;color:#e4ecd7}
+.hkm-portal .hkm-search-panel .hkm-search-slot.is-revealed{animation:hkm-search-reveal .22s ease-out}
+@media(prefers-reduced-motion:reduce){.hkm-portal .hkm-search-panel .hkm-search-slot.is-revealed{animation:none}}
+
+.hkm-reset-host .hkm-reset-hud{height:auto;min-height:0;max-height:min(var(--hkm-hud-height,82dvh),calc(100dvh - 20px))}
+.hkm-reset-host .hkm-command-deck{display:grid;grid-template-columns:minmax(0,1fr);flex:none;min-width:0;border-bottom:1px solid #3b4437}
+.hkm-reset-host .hkm-command-deck[data-enemies="true"]{grid-template-columns:minmax(340px,440px) minmax(0,1fr)}
+.hkm-reset-host .hkm-command-primary{display:flex;flex-direction:column;min-width:0}
+.hkm-reset-host .hkm-command-primary .hkm-reset-toolbar{order:0}
+.hkm-reset-host .hkm-command-primary .hkm-reset-head{min-width:0}
+.hkm-reset-host .hkm-command-enemies{min-width:0;padding:10px;border-left:1px solid #3b4437;background:#1b2018;max-height:260px;overflow:auto}
+.hkm-reset-host .hkm-command-enemies>.hkm-reset-section{margin:0;padding:8px;min-height:0}
+.hkm-reset-host .hkm-command-enemies .hkm-reset-section-title{flex-wrap:wrap}
+.hkm-reset-host .hkm-command-enemies .hkm-reset-card-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))}
+.hkm-reset-host .hkm-reset-body,.hkm-reset-host .hkm-page-content{flex:0 1 auto;min-height:0}
+.hkm-reset-host .hkm-reset-scatter{flex:0 0 auto;min-height:0;max-height:none;overflow:visible}
+.hkm-reset-host .hkm-command-enemies[hidden]{display:none}
+@container hkm-hud (max-width:850px){.hkm-reset-host .hkm-command-deck[data-enemies="true"]{grid-template-columns:minmax(0,1fr)}.hkm-reset-host .hkm-command-enemies{border-left:0;border-top:1px solid #3b4437;max-height:220px}}
+.hkm-fishing-host{pointer-events:none}
+.hkm-fishing-host .hkm-fishing-wide{position:fixed;pointer-events:auto;z-index:2147482995;width:min(1000px,calc(100vw - 16px));max-width:calc(100vw - 16px);transform:none;overflow:auto;overscroll-behavior:contain}
+.hkm-fishing-host .hkm-fishing-top{gap:6px;position:sticky;top:-14px;padding:6px 0;background:#1a2315;z-index:1}
+.hkm-fishing-host .hkm-fishing-top button{font:inherit;min-height:36px;cursor:pointer;color:#e1ebd4}
+.hkm-fishing-host .hkm-fishing-drag{flex:1;min-width:0;border:0;background:transparent;text-align:left;font-weight:700;touch-action:none;cursor:move;overflow-wrap:anywhere}
+.hkm-fishing-host .hkm-fishing-game{min-width:0}
+.hkm-fishing-host .hkm-fishing-game[inert]{opacity:.65}
+.hkm-fishing-host .hkm-fishing-toggle{position:fixed;right:16px;bottom:80px;pointer-events:auto;z-index:2147482996;padding:10px 16px;min-height:44px;border:1px solid #aeb773;border-radius:3px;background:#303b26;color:#e7edcc;font:600 14px/1.4 system-ui,"Microsoft YaHei",sans-serif;box-shadow:0 6px 18px #0008;cursor:pointer}
+.hkm-fishing-host [hidden]{display:none!important}
+.hkm-fishing-host button:focus-visible{outline:2px solid #f0e5b8;outline-offset:2px}
+@media(max-width:600px){.hkm-fishing-host .hkm-fishing-top{top:-10px}.hkm-fishing-host .hkm-fishing-drag{flex-basis:100%}.hkm-fishing-host .hkm-fishing-game p{font-size:12px}.hkm-fishing-host .hkm-fishing-toggle{right:8px;bottom:64px}}
