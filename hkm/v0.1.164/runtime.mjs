@@ -6849,6 +6849,9 @@ const HkmUpgrade = (() => {
     return true;
   };
   const aiSeekExtractionCondition = (mapName, player) => {
+    player.crouched = false;
+    player.soundWait = null;
+    player.soundPursuit = null;
     let areas = aiMapAreas(mapName).filter(area => area !== player.region);
     if (player.extractionSeeking === 'payment') {
       const rule = (GAME_DATA.maps?.[mapName]?.extractAreas || []).map(area => hudExtractRule(mapName, area)).find(Boolean);
@@ -6987,7 +6990,7 @@ const HkmUpgrade = (() => {
     const type = AI_TYPES[player.meta] || AI_TYPES['猛攻哥'];
     const chart = type.judge[player.sub] || type.judge.跑刀 || type.judge['均衡'];
     if (player.meta === '萌新' && (player.sub === '小白' || player.sub === '胆小')) return aiNoviceBasicStep(mapName, player);
-    const treasureSearch = aiTreasureSearchOverride(mapName, player) && !aiExtractionPlan(mapName, player)?.rule.dropBag;
+    const treasureSearch = aiTreasureSearchOverride(mapName, player) && !aiExtractionLocked(player) && !aiExtractionPlan(mapName, player)?.rule.dropBag;
     const retainExtraction = treasureSearch && aiExtractionLocked(player);
 
 
@@ -7007,7 +7010,7 @@ const HkmUpgrade = (() => {
       return;
     }
     const coLocated = aiVisiblePlayers(player).length > 0;
-    if (!aiMouseProfile(player) && !treasureSearch && !coLocated && player.region !== aiTurnContext?.heroTo && !aiNpcTargetsFor(player, mapName).length && aiSoundDecision(mapName, player, chart)) return;
+    if (!aiMouseProfile(player) && !player.extractionSeeking && !treasureSearch && !coLocated && player.region !== aiTurnContext?.heroTo && !aiNpcTargetsFor(player, mapName).length && aiSoundDecision(mapName, player, chart)) return;
     const tanks=aiBagCount(player,AI_OXYGEN_ITEM_IDS);
     if(mapName==='魔鬼海'){
       if(aiWaterCost(mapName,player.region)>0 && player.water<Math.min(AI_MONSTER_SEA_TANK_LOW,player.waterCap) && tanks>0 && !hudCombatFlagOn(asObject(aiTurnContext?.stat)) && !aiNpcTargetsFor(player,mapName).length){
@@ -11492,7 +11495,7 @@ const HkmUpgrade = (() => {
 
   const hkm098OwnedStep = (mapName, player, stat) => {
     if (aiPeaceful(player.id, 'hero')) { aiStep(mapName, player); return; }
-    const treasureSearch = aiTreasureSearchOverride(mapName, player) && !aiExtractionPlan(mapName, player)?.rule.dropBag;
+    const treasureSearch = aiTreasureSearchOverride(mapName, player) && !aiExtractionLocked(player) && !aiExtractionPlan(mapName, player)?.rule.dropBag;
     const retainExtraction = treasureSearch && aiExtractionLocked(player);
     if (!treasureSearch) aiUpdateExtraction(mapName, player);
     if (!hkmSeaAiSpend(mapName,player))return;
