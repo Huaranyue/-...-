@@ -61,11 +61,20 @@ export function createEquipmentEngine({items, underwater}) {
     if(target.effects?.tide && clock<=target.effects.tide.end)ordinary=Math.max(0,ordinary-3);
     const shield=Math.max(0,number(target.effects?.shield));
     if(shield){const absorbed=Math.min(shield,ordinary);target.effects.shield-=absorbed;ordinary-=absorbed;}
-    const total=Math.max(0,ordinary)+Math.max(0,trueDamage),before=target.hp;
+    const total=Math.max(0,ordinary)+Math.max(0,trueDamage),before=target.hp;let available=before;
     target.hp=Math.max(0,before-total);
     if(before>0 && target.hp<=0)target.killer=source.id;
     target.overkill=Math.max(0,total-before);
-    return Math.min(before,total);
+    if(before>0 && target.hp<=0 && target.id!=='hero' && target.kind==='玩家' && equipped(target).some(({item})=>(item.skills || []).some(skill=>skill.name==='人寿保险'))){
+      target.effects ||= {};
+      const fee=Math.ceil(target.maxHp*0.5*50),restore=Math.ceil(target.maxHp*0.5);
+      if(!target.effects.lifeInsuranceUsed && Number.isFinite(target.money) && target.money>=fee){
+        target.money-=fee;target.effects.lifeInsuranceUsed=true;
+        available+=restore;target.hp=Math.max(0,restore-target.overkill);
+        if(target.hp>0)delete target.killer;
+      }
+    }
+    return Math.min(available,total);
   };
   const lifeSteal = (unit,dealt) => {
     if(!has(unit,'soulSiphon') || unit.hp<=0)return 0;
@@ -123,6 +132,7 @@ export function createEquipmentEngine({items, underwater}) {
     const lines=[];let dealt=0;
     for(const target of selected){
       let effective=0,landed=0;
+      const insuredBefore=target.effects?.lifeInsuranceUsed;
       for(let hit=0;hit<hits && target.hp>0;hit++){
         const accuracy=underwater(map,area)?sum(source,'underwaterAccuracy')/100:0;
         const dodge=Math.min(1,Math.max(0,(target.speed-source.speed)/(2*Math.max(1,source.speed)))+Math.max(0,number(target.extraDodge))+(bubble?0.25:0)-accuracy);
@@ -137,6 +147,7 @@ export function createEquipmentEngine({items, underwater}) {
         if(loot)lines.push('价值掠夺：'+loot+' 哈基币。');
       }
       lines.push(target.name+'：命中 '+landed+'/'+hits+' 段，实际伤害 '+effective+'，血量 '+target.hp+'/'+target.maxHp+'。');
+      if(!insuredBefore && target.effects?.lifeInsuranceUsed)lines.push(target.name+'的人寿保险已发动，花费 '+Math.ceil(target.maxHp*25)+' 哈基币，恢复 '+Math.ceil(target.maxHp*0.5)+' 点生命后继续承受溢出伤害。');
     }
     if((weapon.traits || []).some(trait=>trait.id==='radiate'))for(const target of allUnits.filter(unit=>unit.hp>0)){
       const effective=damage(source,target,Math.ceil(target.maxHp*0.1),{map,area,clock,rng,bonus:false});
