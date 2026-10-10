@@ -1,0 +1,829 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+.hkm-opening-v010{--hkm-op-bg:#191c19;--hkm-op-panel:#232722;--hkm-op-line:#424940;--hkm-op-text:#e7e9df;--hkm-op-muted:#aab1a3;--hkm-op-accent:#b2bf80;--hkm-op-amber:#d5af70;box-sizing:border-box;container:hkm-opening/inline-size;width:min(100%,780px);margin:8px auto;border:1px solid var(--hkm-op-line);border-radius:5px;background:var(--hkm-op-bg);color:var(--hkm-op-text);font:14px/1.5 system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;overflow:hidden;color-scheme:dark;box-shadow:0 12px 36px #0003}
+.hkm-opening-v010 *{box-sizing:border-box;min-width:0;overflow-wrap:anywhere}
+.hkm-opening-v010 header{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 16px;padding:18px clamp(14px,3%,24px);border-bottom:1px solid var(--hkm-op-line);background:linear-gradient(110deg,#2a3026,#20241f)}
+.hkm-opening-v010 h1{grid-column:1;margin:0;font-size:clamp(22px,4cqi,30px);line-height:1.25;font-weight:750;letter-spacing:.01em}
+.hkm-opening-v010 p{color:var(--hkm-op-muted);margin:6px 0 0}
+.hkm-opening-v010 header>p{grid-column:1;margin:0;font-size:13px}
+.hkm-opening-v010 header>p:first-child{grid-column:1/-1;color:var(--hkm-op-accent);font-size:10px;font-weight:700;letter-spacing:.14em}
+.hkm-opening-v010 header>[data-hkm-opening-load]{grid-column:2;grid-row:2/4;align-self:center;white-space:nowrap}
+.hkm-opening-v010 form{display:grid;gap:16px;padding:18px clamp(14px,3%,24px) 20px}
+.hkm-opening-v010 fieldset{margin:0;padding:0;border:0}
+.hkm-opening-v010 legend{width:100%;padding:0 0 8px;margin-bottom:12px;border-bottom:1px solid var(--hkm-op-line);color:var(--hkm-op-accent);font-size:14px;line-height:1.5;font-weight:750;letter-spacing:.025em}
+.hkm-opening-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.hkm-opening-field{display:grid;gap:6px}
+.hkm-opening-field.wide{grid-column:1/-1}
+.hkm-opening-field label{font-weight:650;color:var(--hkm-op-text);font-size:13px}
+.hkm-opening-v010 input[type="text"],.hkm-opening-v010 textarea,.hkm-opening-v010 select,.hkm-opening-v010 input[type="number"]{width:100%;min-height:44px;border:1px solid var(--hkm-op-line);border-radius:4px;background:#121511;padding:9px 11px;color:var(--hkm-op-text);font:400 16px/1.4 system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;resize:vertical;transition:border-color .12s,background .12s}
+.hkm-opening-v010 input::placeholder,.hkm-opening-v010 textarea::placeholder{color:#828b7c;opacity:1}
+.hkm-opening-v010 textarea{min-height:120px;line-height:1.6}
+.hkm-opening-v010 select{appearance:none;cursor:pointer;padding-right:36px;background:linear-gradient(45deg,transparent 50%,#b2bf80 50%) calc(100% - 17px) 50%/6px 6px no-repeat,linear-gradient(135deg,#b2bf80 50%,transparent 50%) calc(100% - 11px) 50%/6px 6px no-repeat,#171c15}
+.hkm-opening-v010 select option{background:#1b2018;color:var(--hkm-op-text)}
+.hkm-opening-v010 input:focus,.hkm-opening-v010 textarea:focus,.hkm-opening-v010 select:focus{outline:2px solid var(--hkm-op-accent);outline-offset:2px;border-color:var(--hkm-op-accent)}
+.hkm-opening-rule-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.hkm-opening-rule-card{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:70px;padding:12px;border:1px solid var(--hkm-op-line);border-radius:4px;background:var(--hkm-op-panel);cursor:pointer;transition:border-color .12s,background .12s}
+.hkm-opening-rule-card:has(input:checked){border-color:#788a55;background:#293021}
+.hkm-opening-rule-card input[type="checkbox"]{accent-color:var(--hkm-op-accent);width:20px;height:20px;flex:0 0 auto;margin:0}
+.hkm-opening-rule-card:not(.hkm-opening-field){justify-content:flex-start}
+.hkm-opening-rule-copy{display:grid;gap:3px}
+.hkm-opening-rule-copy strong{font-size:13px;color:var(--hkm-op-text);line-height:1.45;font-weight:700}
+.hkm-opening-rule-copy small{color:var(--hkm-op-muted);font-size:12px;line-height:1.45}
+.hkm-opening-percent{display:flex;align-items:center;gap:6px;flex:0 0 auto;margin:0}
+.hkm-opening-percent input{width:76px;max-width:76px;text-align:center;padding:8px 5px}
+.hkm-opening-percent span{color:var(--hkm-op-accent);font-weight:700}
+.hkm-opening-v010 button{min-height:44px;border:1px solid #647252;border-radius:4px;background:#2d3526;padding:9px 14px;color:#e6ecd7;font:650 14px/1.4 system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;cursor:pointer;transition:background .12s,border-color .12s}
+.hkm-opening-v010 button[type="submit"]{background:var(--hkm-op-accent);border-color:var(--hkm-op-accent);color:#171d11}
+.hkm-opening-v010 button:disabled{opacity:.45;cursor:default}
+.hkm-opening-v010 button:focus-visible{outline:2px solid var(--hkm-op-accent);outline-offset:3px}
+.hkm-opening-actions{display:flex;flex-wrap:wrap;gap:8px}
+.hkm-opening-actions button{flex:1 1 220px}
+.hkm-opening-preview{padding:12px;border:1px solid #535e43;border-left:3px solid var(--hkm-op-accent);border-radius:3px;background:#20261b;white-space:pre-wrap;font-size:13px;line-height:1.6}
+.hkm-opening-v010 .hkm-opening-status{margin:0;font-size:12px;line-height:1.6;color:var(--hkm-op-muted)}
+.hkm-opening-status[data-error="true"]{color:#efb698!important}
+.hkm-opening-v010 [hidden]{display:none!important}
+@media(hover:hover){.hkm-opening-rule-card:hover{border-color:#7d8a67;background:#2b3125}.hkm-opening-v010 button:hover:not(:disabled){background:#3d4931;border-color:var(--hkm-op-accent)}.hkm-opening-v010 button[type="submit"]:hover:not(:disabled){background:#c3ce99;color:#171d11}}
+@container hkm-opening (max-width:540px){.hkm-opening-grid,.hkm-opening-rule-grid{grid-template-columns:1fr}.hkm-opening-field.wide{grid-column:auto}.hkm-opening-v010 header{gap:8px}.hkm-opening-v010 header>[data-hkm-opening-load]{grid-column:1;grid-row:auto;justify-self:start;margin-top:2px}.hkm-opening-v010 textarea{min-height:108px}}
+@media(max-width:560px){.hkm-opening-grid,.hkm-opening-rule-grid{grid-template-columns:1fr}.hkm-opening-field.wide{grid-column:auto}.hkm-opening-v010 header{gap:8px}.hkm-opening-v010 header>[data-hkm-opening-load]{grid-column:1;grid-row:auto;justify-self:start;margin-top:2px}.hkm-opening-v010 form{gap:14px}.hkm-opening-v010 textarea{min-height:108px}}
+@media(prefers-reduced-motion:reduce){.hkm-opening-v010 input,.hkm-opening-v010 textarea,.hkm-opening-v010 select,.hkm-opening-v010 button,.hkm-opening-rule-card{transition:none}}
+</style>
+</head>
+<body>
+<section class="hkm-opening-v010" data-hkm-opening-root="v0.1.104" aria-labelledby="hkm-opening-title">
+  <header><p>HAKIMI OPERATIONS · GAME SAVE</p><h1 id="hkm-opening-title">创建或读取游戏存档</h1><p>自动保存游戏进度，可保留五个快照或导出存档。</p><button type="button" data-hkm-opening-load>读取存档</button></header>
+  <form data-hkm-opening-form>
+    <fieldset data-hkm-create-fields><legend>01 · 创建存档</legend><div class="hkm-opening-grid">
+      <div class="hkm-opening-field wide"><label for="hkm-save-name">存档名称</label><input id="hkm-save-name" name="saveName" type="text" maxlength="60" required autocomplete="off" placeholder="例如：林弥的行动记录"></div>
+      <div class="hkm-opening-field"><label for="hkm-opening-name">主人公名称</label><input id="hkm-opening-name" name="name" type="text" maxlength="40" autocomplete="off" placeholder="例如：林弥"></div>
+      <div class="hkm-opening-field"><label for="hkm-opening-gender">主人公性别</label><select id="hkm-opening-gender" name="gender" required><option value="女性">女性</option><option value="男性">男性</option></select></div>
+      <div class="hkm-opening-field"><label for="hkm-opening-appearance">外貌与体态</label><textarea id="hkm-opening-appearance" name="appearance" maxlength="300" placeholder="发色、瞳色、五官、身高、体型、姿态与醒目标志"></textarea></div>
+      <div class="hkm-opening-field"><label for="hkm-opening-personality">地球经历</label><textarea id="hkm-opening-personality" name="personality" maxlength="180" placeholder="在地球时的生活、职业与重要经历"></textarea></div>
+    </div><p>新存档从哈基米空间·中转站开始，初始 100 哈基币，历史对局为 0。</p></fieldset>
+    <fieldset data-hkm-create-fields><legend>02 · 游戏规则</legend><div class="hkm-opening-rule-grid">
+      <label class="hkm-opening-rule-card"><input type="checkbox" name="keepInventory"><span class="hkm-opening-rule-copy"><strong>死亡不掉落</strong><small>保留主角的普通物品与装备</small></span></label>
+      <label class="hkm-opening-rule-card hkm-opening-field"><span class="hkm-opening-rule-copy"><strong>AI 玩家男性概率</strong><small>影响新对局中的 AI 玩家性别</small></span><span class="hkm-opening-percent"><input name="aiMaleProbability" type="number" min="0" max="100" step="1" value="50" aria-label="AI 玩家男性概率"><span>%</span></span></label>
+      <label class="hkm-opening-rule-card"><input type="checkbox" name="femaleFutanari"><span class="hkm-opening-rule-copy"><strong>女性 AI 扶她性征</strong><small>允许女性 AI 玩家拥有扶她性征</small></span></label>
+    </div></fieldset>
+    <p class="hkm-opening-preview" data-hkm-opening-preview aria-live="polite"></p>
+    <div class="hkm-opening-actions"><button type="submit" data-hkm-opening-submit>创建存档并开始游戏</button></div>
+    <p class="hkm-opening-status" data-hkm-opening-status aria-live="polite">需要恢复旧进度时点击“读取存档”；创建新存档无需切换页面。</p>
+    <textarea data-hkm-opening-fallback readonly hidden aria-label="自动发送失败时的开局消息"></textarea>
+  </form>
+</section>
+<script>
+(async () => {
+  
+const HkmFrontendMessage = (() => {
+  const open = '<Frontend script input>', close = '</Frontend script input>';
+  const wrap = text => open + '\n' + String(text ?? '').replace(/<\/?Frontend script input>/g, token => token.replace('<', '\x26lt;').replace('>', '\x26gt;')) + '\n' + close;
+  const action = (text, type = 'records') => '<HkmFrontendAction type="'+(/^[a-z_]+$/.test(type)?type:'records')+'">\n'+String(text ?? '')+'\n</HkmFrontendAction>';
+  const append = (original, generated, type = 'records') => String(original ?? '') + (String(generated ?? '').trim() ? '\n\n' + wrap(action(String(generated).trim(),type)) : '');
+  const receipt = (message, revision) => {
+    const text=String(message ?? '');
+    if(!text.endsWith(close))throw Error('前端附加内容缺少统一结束标签');
+    return text.slice(0,-close.length) + '<HkmPendingReceipt revision="' + String(revision) + '"/>\n' + close;
+  };
+  return { wrap, action, append, receipt };
+})();
+  const HkmSea = (() => {
+  const number=(value,fallback=0)=>Number.isFinite(Number(value))?Number(value):fallback;
+  const clamp=(value,cap)=>Math.max(0,Math.min(cap,number(value)));
+  const cost=(map,area,maps)=>{
+    if(map!=='魔鬼海')return 0;
+    const groups=maps?.魔鬼海?.areaGroups || {};
+    for(const [key,value] of [['渊海区域',3],['深海区域',2],['浅海区域',1]])if(groups[key]?.includes(area))return value;
+    return 0;
+  };
+  const oxygen=(map,area,maps)=>map==='魔鬼海' && maps?.魔鬼海?.areaGroups?.有氧气的区域?.includes(area)===true;
+  const statusBonus=stat=>Object.values(stat.状态列表 || {}).reduce((sum,row)=>{
+    const match=String(row.效果 || '').match(/水下行动值上限\s*[+＋]\s*(\d+(?:\.\d+)?)/);
+    return sum+(match?number(match[1]):0);
+  },0);
+  const cap=stat=>Math.max(4,4+number(stat.主角?.额外水下行动值上限)+statusBonus(stat));
+  const spend=(scene,{maps,waterCap=4,costArea=scene.区域,free=false,extra=0,penalty=0}={})=>{
+    const sea=scene.地图==='魔鬼海',waterCost=cost(scene.地图,costArea,maps)+(sea && cost(scene.地图,costArea,maps)>0?penalty:0);
+    const roundCost=free?0:1+(sea?0:extra+penalty);
+    const arrivingOxygen=oxygen(scene.地图,scene.区域,maps);
+    return {scene:{...scene,剩余交互轮数:String(Math.max(0,number(scene.剩余交互轮数)-roundCost)),...(sea?{剩余水下行动值:String(arrivingOxygen?waterCap:clamp(number(scene.剩余水下行动值)-waterCost,waterCap)),水下机制版本:1}:{})},cost:roundCost,waterCost,arrivingOxygen};
+  };
+  const refill=(value,limit,ratio)=>clamp(number(value)+Math.max(1,Math.round(limit*ratio)),limit);
+  const suffocate=(scene,hp,maxHp,maps)=>{
+    const current=Math.max(0,number(hp)),active=cost(scene.地图,scene.区域,maps)>0 && number(scene.剩余水下行动值)<=0;
+    const damage=active && current>0?Math.ceil(Math.max(1,number(maxHp,20))*0.45):0;
+    return {hp:Math.max(0,current-damage),damage,overkill:Math.max(0,damage-current)};
+  };
+  const migrate=(raw,frontend={})=>{
+    const stat=structuredClone(raw),front=structuredClone(frontend),scene=stat.场景 || {},sea=scene.地图==='魔鬼海';
+    for(const key of ['剩余交互轮数','剩余水下行动值','水下机制版本'])if(scene[key]!==undefined && (!['number','string'].includes(typeof scene[key]) || String(scene[key]).trim()==='' || !Number.isFinite(Number(scene[key])) || Number(scene[key])<0))throw Error('场景'+key+'无效。');
+    if(scene.水下机制版本!==undefined && (!Number.isInteger(Number(scene.水下机制版本)) || Number(scene.水下机制版本)>1))throw Error('不支持此水下计数版本。');
+    if(number(scene.水下机制版本)<1){
+      const rename=box=>{if(!box)return;if(box.额外交互轮数上限!==undefined)box.额外水下行动值上限=number(box.额外交互轮数上限);else box.额外水下行动值上限=number(box.额外水下行动值上限);delete box.额外交互轮数上限;};
+      rename(stat.主角);rename(stat.主角?.基础属性);rename(stat.主角?.临时加成?.固定);
+      for(const row of Object.values(stat.状态列表 || {}))if(/本局交互轮数上限/.test(String(row.效果))){for(const key of ['名称','描述','效果'])row[key]=String(row[key] || '').replaceAll('交互轮数上限','水下行动值上限').replaceAll('轮数上限','水下行动值上限');}
+      scene.剩余水下行动值=String(sea?Math.max(0,number(scene.剩余交互轮数)):0);
+      if(sea)scene.剩余交互轮数='35';
+      scene.水下机制版本=1;
+    }
+    const run=front.run;
+    if(run?.map==='魔鬼海' && number(run.seaClockVersion)<1){
+      run.water=sea?number(scene.剩余水下行动值):number(run.rounds);run.roundCap=35;run.rounds=sea?number(scene.剩余交互轮数):35;run.seaClockVersion=1;
+      for(const player of run.players || []){
+        player.waterCap=4+number(player.extraCap);player.water=clamp(player.rounds,player.waterCap);
+        player.baseRounds=35;player.roundCap=35;player.rounds=35;player.seaClockVersion=1;
+      }
+      for(const record of front.usePending || []){
+        const undo=record.undo || {};
+        if(['小型氧气罐','大型氧气罐'].includes(record.item) && undo.rounds!==undefined){undo.water=undo.rounds;delete undo.rounds;}
+        if(['水肺药水','强效水肺药水'].includes(record.item))delete undo.runRoundCap;
+      }
+    }
+    return {stat,front};
+  };
+  return {cost,oxygen,cap,statusBonus,spend,refill,suffocate,migrate};
+})();
+
+  const HkmCodex = (() => {
+  const object = value => value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+  const validId = id => /^COL-\d{4}$/.test(id);
+  const defaults = () => ({ version: 1, counts: {}, unlocked: {} });
+  const normalize = raw => {
+    const next = defaults();
+    for (const [id, count] of Object.entries(object(raw?.counts))) if (validId(id) && Number.isSafeInteger(count) && count > 0) next.counts[id] = count;
+    for (const [id, lit] of Object.entries(object(raw?.unlocked))) if (validId(id) && lit === true && next.counts[id] > 0) next.unlocked[id] = true;
+    return next;
+  };
+  const validate = raw => {
+    if (raw == null) return;
+    if (object(raw) !== raw || raw.version !== 1 || object(raw.counts) !== raw.counts || object(raw.unlocked) !== raw.unlocked) throw Error('图鉴数据格式无效。');
+    for (const [id, count] of Object.entries(raw.counts)) if (!validId(id) || !Number.isSafeInteger(count) || count < 0) throw Error('图鉴带出数量无效。');
+    for (const [id, lit] of Object.entries(raw.unlocked)) if (!validId(id) || typeof lit !== 'boolean' || (lit && !(raw.counts[id] > 0))) throw Error('图鉴点亮记录无效。');
+  };
+  const record = (raw, rows, resolve) => {
+    const next = normalize(raw);
+    for (const row of rows) {
+      const item = resolve(row.name), count = row.quantity;
+      if (!validId(item?.id || '') || !Number.isSafeInteger(count) || count <= 0) continue;
+      const total = (next.counts[item.id] || 0) + count;
+      if (!Number.isSafeInteger(total)) throw Error('图鉴带出数量超过上限。');
+      next.counts[item.id] = total;
+    }
+    return next;
+  };
+  const pending = (raw, id) => (raw?.counts?.[id] || 0) > 0 && raw?.unlocked?.[id] !== true;
+  const claim = (raw, id, stars) => {
+    const next = normalize(raw);
+    if (!pending(next, id)) return null;
+    const balance = Number(stars ?? 0);
+    if (!Number.isSafeInteger(balance) || balance < 0 || !Number.isSafeInteger(balance + 1)) throw Error('星光余额无效，点亮已停止。');
+    next.unlocked[id] = true;
+    return { codex: next, stars: balance + 1 };
+  };
+  const catalog = (items, maps) => Object.values(items).map(item => {
+    const categories = [...new Set(String(item.category || '其他').split(/[/-]/).filter(Boolean))];
+    const sources = object(item.sources), locations = new Set(Object.keys(object(sources.loot)));
+    for (const map of sources.collectionLists || []) if (maps.includes(map)) locations.add(map);
+    if ((sources.shops || []).length) locations.add('哈基米空间');
+    return { ...item, categories, maps: [...locations].filter(map => maps.includes(map)) };
+  }).sort((a, b) => a.id.localeCompare(b.id));
+  const query = (items, raw, filters = {}, page = 1, pageSize = 12) => {
+    const rows = items.filter(item => (!filters.rarity || item.rarity === filters.rarity) && (!filters.category || item.categories.includes(filters.category)) && (!filters.map || (filters.map === '其他' ? !item.maps.length : item.maps.includes(filters.map))))
+      .sort((a, b) => Number(pending(raw, b.id)) - Number(pending(raw, a.id)) || a.id.localeCompare(b.id));
+    const pages = Math.max(1, Math.ceil(rows.length / pageSize)), current = Math.max(1, Math.min(pages, Math.floor(page) || 1));
+    return { rows: rows.slice((current - 1) * pageSize, current * pageSize), total: rows.length, pages, page: current };
+  };
+  return { defaults, normalize, validate, record, pending, claim, catalog, query };
+})();
+
+  
+const HkmRunContext = (() => {
+  const object = value => value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+  const pick = (value, keys) => Object.fromEntries(keys.filter(key => Object.hasOwn(object(value),key)).map(key => [key,value[key]]));
+  const peek = (stat, front, chatKey, equipment = {}) => {
+    const run=front?.run, runId=HkmBattle.id(run), sent=front?.runContextReceipt;
+    if(!runId || stat?.场景?.地图!==run.map || sent?.runId===runId && sent?.chatKey===chatKey) return {text:'',receipt:null};
+    const value={场景:pick(stat.场景,['地图','区域']),主角:pick(stat.主角,['血量上限','攻击力','防御力','速度'])};
+    const gear=Object.fromEntries(Object.entries(object(equipment)).filter(([,row])=>row && row!=='无'));
+    if(Object.keys(gear).length)value.装备=gear;
+    const text='<HkmRunContext version="1">\n'+JSON.stringify(value).replace(/</g,'\\u003c').replace(/>/g,'\\u003e')+'\n</HkmRunContext>';
+    return {text,receipt:{runId,chatKey}};
+  };
+  const acknowledge = (front, receipt, chatKey) => {
+    if(!receipt || receipt.chatKey!==chatKey || receipt.runId!==HkmBattle.id(front?.run))return false;
+    front.runContextReceipt={runId:receipt.runId,chatKey};return true;
+  };
+  return {peek,acknowledge};
+})();
+
+const HkmBattle = (() => {
+  const object = value => value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+  const copy = value => JSON.parse(JSON.stringify(value));
+  const count = value => Math.max(0, Math.floor(Number(value) || 0));
+  const id = run => run ? String(run.id || String(run.map) + ':' + String(run.startedAt)) : '';
+  const npcEnemy = row => row && row.friendly !== true && row.友善 !== true && !['友善','友好','中立'].includes(row.attitude)
+    && (['敌对','中立-敌对'].includes(row.attitude) || Number(row.attack) > 0 || row.fishingMonster === true);
+  const units = run => [...(run?.players || []).map(row => ({ row, kind:'玩家' })), ...(run?.npcs || []).map(row => ({ row, kind:'NPC' })), ...Object.values(object(run?.fishingDead)).map(row => ({ row, kind:'NPC' }))];
+  const roster = run => {
+    const next = { ...object(run?.battleRoster) };
+    for (const {row,kind} of units(run)) if (row?.id && (kind === '玩家' || npcEnemy(row))) next[row.id] = kind;
+    return next;
+  };
+  const summary = run => {
+    const targets = roster(run), seen = object(run?.fishingKills?.seen);
+    const players = Object.values(targets).filter(kind => kind === '玩家').length;
+    const npcs = Object.values(targets).filter(kind => kind === 'NPC').length;
+    const knownPlayers = Object.entries(seen).filter(([key,actor]) => actor === 'hero' && targets[key] === '玩家').length;
+    const npcKills = Object.entries(seen).filter(([key,actor]) => actor === 'hero' && targets[key] === 'NPC').length;
+    const legacy = run?.battleVersion === 1 ? count(run.legacyPlayerKills) : Math.max(0, count(run?.killCount) - knownPlayers);
+    return { players, npcs, playerKills:Math.min(players,knownPlayers + legacy), npcKills:Math.min(npcs,npcKills) };
+  };
+  const register = run => {
+    if (!run) return false;
+    const before = JSON.stringify([run.battleVersion,run.battleRoster,run.legacyPlayerKills,run.killCount]);
+    const next = summary(run);
+    if (run.battleVersion !== 1) {
+      const known = Object.entries(object(run.fishingKills?.seen)).filter(([key,actor]) => actor === 'hero' && roster(run)[key] === '玩家').length;
+      run.legacyPlayerKills = Math.max(0,next.playerKills - known);
+    }
+    run.battleVersion = 1; run.battleRoster = roster(run); run.killCount = summary(run).playerKills;
+    return before !== JSON.stringify([run.battleVersion,run.battleRoster,run.legacyPlayerKills,run.killCount]);
+  };
+  const clear = run => {
+    const totals = summary(run);
+    return totals.players > 0 && totals.playerKills >= Math.ceil(totals.players / 2)
+      && (run?.players || []).every(row => row.alive === false || Number(row.hp) <= 0 || row.extracted === true);
+  };
+  const blank = () => ({ _对局ID:'', _玩家总数:0, _NPC敌人总数:0, _主角击杀玩家数:0, _主角击杀NPC数:0, 叙事击杀:{} });
+  const project = (raw,run) => {
+    if (!run) return blank();
+    const current = id(run), totals = summary(run), events = {};
+    for (const [key,row] of Object.entries(object(raw?.叙事击杀))) {
+      if (key === row?.目标ID && row.对局ID === current && ['玩家','NPC'].includes(row.目标类型) && ['主角','其他'].includes(row.击杀者)) events[key] = copy(row);
+    }
+    return { _对局ID:current, _玩家总数:totals.players, _NPC敌人总数:totals.npcs, _主角击杀玩家数:totals.playerKills, _主角击杀NPC数:totals.npcKills, 叙事击杀:events };
+  };
+  const narrative = (stat,run) => {
+    if (!run || stat?.场景?.地图 !== run.map) return [];
+    const events = project(stat.本局统计,run).叙事击杀, result = [];
+    for (const [key,event] of Object.entries(events)) {
+      if (event.确认死亡 !== true || object(run.fishingKills?.seen)[key]) continue;
+      const target = units(run).find(({row,kind}) => row.id === key && kind === event.目标类型 && row.region === stat.场景.区域 && !row.extracted);
+      if (!target) continue;
+      const visible = Object.entries(object(stat.敌人)).find(([name,row]) => {
+        const recordId = row?.ID || row?._ID;
+        return recordId ? recordId === key : key === name || row?.名称 === target.row.name || name === target.row.name;
+      });
+      const currentHp = visible ? String(visible[1]?.血量 ?? '').split('/')[0].trim() : '';
+      const hp = /^\d+(?:\.\d+)?$/.test(currentHp) ? Number(currentHp) : NaN;
+      if (!visible || !Number.isFinite(hp) || hp !== 0) continue;
+      result.push({ target:target.row, kind:target.kind, actor:event.击杀者 === '主角' ? 'hero' : 'other' });
+    }
+    return result;
+  };
+  const settlement = (stat,run) => {
+    const ledger = { ...object(stat?.前端结算?.事件) }, stats = { ...object(stat?.统计信息) };
+    let players = 0;
+    for (const [target,actor] of Object.entries(object(run?.fishingKills?.seen))) {
+      if (actor !== 'hero' || roster(run)[target] !== '玩家') continue;
+      const key = 'kill:' + id(run) + ':' + target;
+      if (ledger[key] === true) continue;
+      ledger[key] = true; players++;
+    }
+    if (players) stats.历史击杀玩家总数 = count(stats.历史击杀玩家总数) + players;
+    return { players, patch:{ 统计信息:stats, 前端结算:{ ...object(stat?.前端结算), 事件:ledger }, 本局统计:project(stat?.本局统计,run) } };
+  };
+  return {id,npcEnemy,roster,summary,register,clear,blank,project,narrative,settlement};
+})();
+
+const HkmStateBoundary = (() => {
+  const object = value => value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+  const copy = value => JSON.parse(JSON.stringify(value));
+  const pick = (value, keys) => Object.fromEntries(keys.filter(key => Object.hasOwn(object(value), key)).map(key => [key, copy(value[key])]));
+  const equipmentSlots = ['主武器','副武器','头盔','面部','胸甲','护腿','靴子','背包','内裤','项链','戒指','手饰','特殊工具'];
+  const equipment = stat => Object.fromEntries(equipmentSlots.map(slot=>[slot,typeof stat?.装备?.[slot]==='string' ? stat.装备[slot] : '无']));
+  const heroKeys = ['姓名','性别','处女状态','是否死亡','致命溢出伤害','当前血量'];
+  const semantic = row => row?.前端判定 === '语义' || typeof row?.语义目标 === 'string' && !!row.语义目标;
+  const frontendStatus = key => /^(恢复|负重|免轮|上限)-/.test(key);
+  const migrate = raw => {
+    const stat = copy(object(raw));
+    stat.任务 = {...object(stat.任务)};
+    for (const [root, type] of [['系统任务','main'],['战局任务','battle'],['其他委托','commission']]) {
+      for (const [key, value] of Object.entries(object(stat[root]))) {
+        const row = object(value), id = String(row.任务ID || key);
+        if (!Object.hasOwn(stat.任务, id)) stat.任务[id] = {...row,任务ID:id,类型:row.类型 || type};
+      }
+      delete stat[root];
+    }
+    for (const box of [stat.主角,stat.主角?.基础属性,stat.主角?.临时加成?.固定]) if (box && Object.hasOwn(box,'额外交互轮数上限')) {
+      if (!Object.hasOwn(box,'额外水下行动值上限')) box.额外水下行动值上限 = box.额外交互轮数上限;
+      delete box.额外交互轮数上限;
+    }
+    return stat;
+  };
+  const compose = (raw, privateStat, front = {}) => {
+    if (!privateStat || !Object.keys(object(privateStat)).length) return {...migrate(raw),本局统计:HkmBattle.project(raw?.本局统计,front.run)};
+    const stat = migrate(privateStat), current = object(raw);
+    stat.主角 = {...object(stat.主角),...pick(current.主角,heroKeys)};
+    stat.场景 = {...object(stat.场景),...pick(current.场景,['是否战斗中'])};
+    stat.统计信息 = {...object(stat.统计信息),...pick(current.统计信息,['哈基币','名望','风评'])};
+    if (Object.hasOwn(current,'状态列表')) stat.状态列表 = {
+      ...Object.fromEntries(Object.entries(object(stat.状态列表)).filter(([key])=>frontendStatus(key))),
+      ...copy(Object.fromEntries(Object.entries(object(current.状态列表)).filter(([key])=>!frontendStatus(key)))),
+    };
+    const visible = visibleEnemies(stat,front);
+    for (const [key, row] of Object.entries(object(current.敌人))) if (Object.hasOwn(visible,key)) {
+      stat.敌人[key] = {...stat.敌人[key],...pick(row,['血量','状态','标签'])};
+    }
+    for (const [key, row] of Object.entries(object(current.任务))) if (semantic(stat.任务[key])) {
+      stat.任务[key] = {...stat.任务[key],...pick(row,['语义进度','进度说明','语义完成','已完成步骤'])};
+    }
+    stat.本局统计 = HkmBattle.project(current.本局统计,front.run);
+    return stat;
+  };
+  const visibleEnemies = (stat, front = {}) => {
+    const scene = object(stat.场景), run = object(front.run);
+    return Object.fromEntries(Object.entries(object(stat.敌人)).filter(([key,row]) => {
+      if (row?.地图 && row.地图 !== scene.地图 || row?.区域 && row.区域 !== scene.区域 || row?.离开区域 === '是') return false;
+      const player = (run.players || []).find(player => player.id === key || player.name === (row?.名称 || key));
+      if (player) return run.map === scene.地图 && player.region === scene.区域 && player.alive !== false && !player.extracted
+        && (!player.crouched || Number.isFinite(player.revealedTurn) && player.revealedTurn === run.soundTurn || run.sight?.['hero:'+player.id]?.area === player.region && run.sight?.['hero:'+player.id]?.noticed === true);
+      const npc = (run.npcs || []).find(npc => npc.id === key || npc.id === row?.ID || npc.name === (row?.名称 || key));
+      return npc ? run.map === scene.地图 && npc.region === scene.区域 && Number(npc.hp) > 0 : !!row?.区域 && row.区域 === scene.区域 && (!row.地图 || row.地图 === scene.地图);
+    }));
+  };
+  const unitMeta = (key,row,front) => {
+    const matches = p => row?.ID ? p.id===row.ID : p.id===key || p.name===(row?.名称 || key);
+    const player = (front.run?.players || []).find(matches);
+    const npc = (front.run?.npcs || []).find(matches);
+    return {ID:player?.id || npc?.id || row?.ID || key,类型:player?'玩家':'NPC'};
+  };
+  const project = (stat, front = {}) => ({
+    场景: pick(stat.场景,['是否战斗中']),
+    主角: pick(stat.主角,heroKeys),
+    装备: equipment(stat),
+    敌人: Object.fromEntries(Object.entries(visibleEnemies(stat,front)).map(([key,row]) => [key,{...pick(row,['名称','血量','状态','标签']),_ID:unitMeta(key,row,front).ID,_类型:unitMeta(key,row,front).类型}])),
+    状态列表: copy(Object.fromEntries(Object.entries(object(stat.状态列表)).filter(([key])=>!frontendStatus(key)))),
+    任务: Object.fromEntries(Object.entries(object(stat.任务)).filter(([,row]) => semantic(row)).map(([key,row]) => [key,{...pick(row,['任务名称','语义目标','语义进度','进度说明']),语义完成:row.语义完成===true,已完成步骤:copy(object(row.已完成步骤))}])),
+    统计信息: pick(stat.统计信息,['哈基币','名望','风评']),
+    本局统计: HkmBattle.project(stat.本局统计,front.run),
+  });
+  const view = (stat, front = {}, equipment = {}) => ({
+    场景: pick(stat.场景,['地图','区域','剩余交互轮数','剩余水下行动值','是否战斗中']),
+    主角: pick(stat.主角,['姓名','性别','处女状态','是否死亡','当前血量','血量上限','攻击力','防御力','速度','当前负重','负重上限','水下行动值上限']),
+    装备: copy(equipment),
+    当前可见单位: Object.fromEntries(Object.entries(visibleEnemies(stat,front)).map(([key,row]) => [key,{...unitMeta(key,row,front),...pick(row,['名称','性别','血量','攻击力','防御力','速度','状态','标签',...(row?.来源 === '其他玩家' ? [] : ['描述'])])}])),
+    状态列表: copy(object(stat.状态列表)),
+    生涯: pick(stat.统计信息,['历史对局总数']),
+    本局统计: HkmBattle.project(stat.本局统计,front.run),
+  });
+  const context = value => '<HkmViewContext version="1">\n' + JSON.stringify(value).replace(/</g,'\\u003c').replace(/>/g,'\\u003e') + '\n</HkmViewContext>';
+  return {compose,migrate,project,visibleEnemies,view,context,semantic,equipmentSlots};
+})();
+
+const HkmSave = (() => {
+  const format = 'hkm-frontend-save', gameId = 'hkm-sdt', maxBytes = 8 * 1024 * 1024;
+  const locations = {"哈基米空间":["中转站","哈基米军需店","安全屋","玩家自由贸易区","模拟都市","特勤处"],"谷歌大厦":["天台撤离点","基米数据机房","顶层报告厅","基米服务器室","总裁会议室","总裁会客厅","废弃档案室","打卡区","医务室","员工通道","综合办公室","基米办公室","经理办公室","打印复印室","食堂","茶室","中央通道","健身房","娱乐区","员工休息室","员工更衣室","卸货区","物流分拣区","备用仓库","设备维护间","后勤办公室","大厦配电室","大厦前台撤离点"],"魔鬼海":["礁石海岸","度假海滩","巨蚌钓台撤离点","海滨别墅","诡异灵宅","不老泉","落星山","废弃渔场","浅海巨藻林","珊瑚礁群","锦鳞海","回响洞窟","神秘洞穴","望月井","渔人野冢","热液喷口","潜水艇残骸","鲨鱼域","深海幽境","洞潜者埋骨地","提丰遗骸","古代文明遗迹","触手母巢","精液繁殖场","无光海渊","渊海祭坛","安康鱼巢穴","无底深坑"]};
+  const own = (o,k) => Object.prototype.hasOwnProperty.call(o,k);
+  const object = v => v !== null && typeof v === 'object' && !Array.isArray(v);
+  const uiKeys = new Set(['winPos','sellBatch','debugOpen']);
+  const host = () => { try { return window.parent?.SillyTavern ? window.parent : window; } catch (_) { return window; } };
+  const context = () => host().SillyTavern?.getContext?.();
+  const copy = value => {
+    let nodes = 0;
+    const visit = (v,depth) => {
+      if (++nodes > 250000 || depth > 80) throw Error('存档结构过大或层级过深。');
+      if (v === null || typeof v === 'string' || typeof v === 'boolean') return v;
+      if (typeof v === 'number' && Number.isFinite(v)) return v;
+      if (Array.isArray(v)) return v.map(x=>visit(x,depth+1));
+      if (!object(v)) throw Error('存档包含无法保存的数据。');
+      const next={};
+      for (const [k,x] of Object.entries(v)) {
+        if (['__proto__','prototype','constructor'].includes(k)) throw Error('存档包含不安全的字段名。');
+        next[k]=visit(x,depth+1);
+      }
+      return next;
+    };
+    return visit(value,0);
+  };
+  const defaults = () => ({
+    游戏规则:{keepInventory:false,aiMaleProbability:50,femaleFutanari:false},前端结算:{回执:{},事件:{},经验对象:{}},本局统计:HkmBattle.blank(),
+    场景:{地图:'哈基米空间',区域:'中转站',剩余交互轮数:'0',剩余水下行动值:'0',水下机制版本:0,是否战斗中:false},
+    主角:{姓名:'未命名',性别:'女性',处女状态:'是',是否死亡:false,致命溢出伤害:0,当前血量:20,血量上限:20,攻击力:6,防御力:0,速度:10,当前负重:0,负重上限:40,水下行动值上限:4,额外水下行动值上限:0,
+      基础属性:{已校准:'否',攻击力:6,防御力:0,血量上限:20,速度:10,负重上限:40,额外水下行动值上限:0},
+      临时加成:{固定:{攻击力:0,防御力:0,血量上限:0,速度:0,负重上限:0,额外水下行动值上限:0},百分比:{攻击力:0,防御力:0,血量上限:0,速度:0}}},
+    渔具状态:{version:1,serial:0,instances:{}},敌人:{},装备:Object.fromEntries(['主武器','副武器','头盔','面部','胸甲','护腿','靴子','背包','内裤','项链','戒指','手饰','特殊工具'].map(k=>[k,'无'])),
+    状态列表:{},藏匿物:{},散落物品:{},背包:{携带收藏品:{}},任务:{},
+    任务档案:{已完成任务:{},重复任务完成次数:{},任务条件标签:{}},
+    统计信息:Object.fromEntries(['哈基币','星光','总资产','经验人数','历史对局总数','历史成功撤离总数','历史击杀玩家总数','历史带出总价值','历史带出奇异收藏品总数','历史带出至宝收藏品总数','历史带出神秘收藏品总数','钓到奇异鱼总数','钓到至宝鱼总数','钓到神秘鱼总数','风评','名望'].map(k=>[k,0])),
+    特勤处:{健身房:0,潜水中心:0,生命强化:0,臂力强化:0,解锁记录:{水下耗尽:false}},
+    安全屋:{收藏品:{}}
+  });
+  const roots=Object.keys(defaults());
+  const mergeDefaults = (base,raw,label) => {
+    if (raw === undefined) return copy(base);
+    if (object(base)) {
+      if (!object(raw)) throw Error(label+'应当是一组字段。');
+      const out=copy(raw);
+      for (const [k,v] of Object.entries(base)) out[k]=mergeDefaults(v,raw[k],label+'.'+k);
+      return out;
+    }
+    if (typeof base === 'number') {
+      if (!['number','string'].includes(typeof raw) || String(raw).trim()==='' || !Number.isFinite(Number(raw))) throw Error(label+'不是有效数字。');
+      return Number(raw);
+    }
+    if (typeof base === 'boolean' && typeof raw !== 'boolean') throw Error(label+'应当是 true 或 false。');
+    if (typeof base === 'string' && !['string','number'].includes(typeof raw)) throw Error(label+'应当是文本。');
+    return typeof base === 'string' ? String(raw) : raw;
+  };
+  const googleAliases = {"四层东侧楼梯":"废弃档案室","总裁档案室":"废弃档案室","三层东侧楼梯":"打印复印室","二层东侧楼梯":"员工更衣室","一层东侧楼梯":"大厦前台撤离点"};
+  const migrateGoogle = value => {
+    const rename = text => {
+      if (Object.hasOwn(googleAliases,text)) return googleAliases[text];
+      if (text.startsWith('谷歌大厦::')) {
+        const parts=text.split('::');parts[1]=googleAliases[parts[1]] || parts[1];return parts.join('::');
+      }
+      return text;
+    };
+    const visit = data => {
+      if (typeof data==='string') return rename(data);
+      if (Array.isArray(data)) return data.map(visit);
+      if (!object(data)) return data;
+      const next={};
+      for (const [key,entry] of Object.entries(data)) {
+        const target=rename(key),mapped=visit(entry);
+        if (Object.hasOwn(next,target) && typeof next[target]==='number' && typeof mapped==='number') next[target]=Math.min(next[target],mapped);
+        else if (Object.hasOwn(next,target) && typeof next[target]==='boolean' && typeof mapped==='boolean') next[target]=next[target] || mapped;
+        else if (Object.hasOwn(next,target) && object(next[target]) && object(mapped)) {
+          const prior=next[target];next[target]={...prior,...mapped};
+          if (prior.名称===mapped.名称 && Number.isFinite(prior.数量) && Number.isFinite(mapped.数量)) next[target].数量=prior.数量+mapped.数量;
+        }
+        else next[target]=mapped;
+      }
+      return next;
+    };
+    return visit(value);
+  };
+  const normalizeStat = raw => {
+    raw=migrateGoogle(copy(raw));
+    if (!object(raw) || !object(raw.主角) || !object(raw.场景)) throw Error('缺少主角或场景变量，不是完整的游戏存档。');
+    raw=HkmStateBoundary.migrate(HkmSea.migrate(raw).stat);
+    const base=defaults(),out={};
+    for (const k of roots) out[k]=mergeDefaults(base[k],raw[k],k);
+    if (!locations[out.场景.地图]?.includes(out.场景.区域)) throw Error('存档的地图或区域不受本卡支持。');
+    if (!['女性','男性'].includes(out.主角.性别)) throw Error('主角性别仅限男性或女性。');
+    if (!['是','否'].includes(out.主角.处女状态)) throw Error('主角处女状态仅限是或否。');
+    for (const bag of [out.背包.携带收藏品,out.安全屋.收藏品,out.藏匿物,out.散落物品]) {
+      if (!object(bag)) throw Error('物品表格式无效。');
+      for (const row of Object.values(bag)) {
+        if (!object(row)) throw Error('物品条目格式无效。');
+        for (const k of ['数量','价值','重量']) if (row[k] !== undefined) {if(!['number','string'].includes(typeof row[k]) || String(row[k]).trim()==='' || !Number.isFinite(Number(row[k])) || Number(row[k])<0)throw Error('物品'+k+'无效。');row[k]=k==='重量'?Math.round((Number(row[k])+Number.EPSILON)*100)/100:Number(row[k]);}
+      }
+    }
+    for(const key of ['剩余交互轮数','剩余水下行动值','水下机制版本'])if(!Number.isFinite(Number(out.场景[key])) || Number(out.场景[key])<0)throw Error('场景计数无效。');
+    for(const name of ['健身房','潜水中心','生命强化','臂力强化'])if(!Number.isInteger(out.特勤处[name]) || out.特勤处[name]<0 || out.特勤处[name]>3)throw Error('特勤处等级须为 0–3。');
+    if(!Number.isSafeInteger(out.统计信息.星光) || out.统计信息.星光<0)throw Error('星光余额无效。');
+    return out;
+  };
+  const frontend = raw => {
+    if (!object(raw)) throw Error('前端数据格式无效。');
+    const out=migrateGoogle(copy(raw));
+    HkmCodex.validate(out.codex);
+    out.codex=HkmCodex.normalize(out.codex);
+    if (out.version != null && (!Number.isInteger(out.version) || out.version>19 || out.version<1)) throw Error('不支持此版本的前端数据。');
+    if (out.lifecycleJournal?.phase === 'prepared') throw Error('存档含未完成结算，请完成结算后重新保存。');
+    for (const k of uiKeys) delete out[k];
+    for (const k of ['tiers','visited','specials','market','carts','keychain','keyDurability','itemCounters','containerLedger','settleAcks']) if (out[k]!=null && !object(out[k])) throw Error('前端 '+k+' 格式无效。');
+    if (out.run != null) {
+      if (!object(out.run) || !locations[out.run.map] || !Array.isArray(out.run.players)) throw Error('对局数据格式无效。');
+      for (const k of ['npcs','registered']) if (out.run[k]!=null && !Array.isArray(out.run[k])) throw Error('对局 '+k+' 格式无效。');
+      if (out.run.boxes!=null && !object(out.run.boxes)) throw Error('战利品盒格式无效。');
+      if(out.run.homeIncome!=null && (!object(out.run.homeIncome) || ['boxes','cats'].some(key=>!Number.isSafeInteger(out.run.homeIncome[key]) || out.run.homeIncome[key]<0)))throw Error('家具收益记录无效。');
+    }
+    if(out.home!=null){const h=out.home;if(!object(h) || h.schemaVersion!==1 || !object(h.placed) || !object(h.cats) || !Array.isArray(h.unlockedRecipes))throw Error('安全屋陈设数据格式无效。');for(const [id,count] of Object.entries(h.placed))if(!/^COL-\d{4}$/.test(id) || !Number.isSafeInteger(count) || count<0)throw Error('陈设数量无效。');for(const key of ['temporary','permanent'])if(!Number.isSafeInteger(h.cats[key]) || h.cats[key]<0)throw Error('安全屋住客数量无效。');if(h.unlockedRecipes.some(id=>typeof id!=='string' || !/^[a-z][a-z0-9-]{0,60}$/.test(id)))throw Error('配方解锁记录无效。');}
+    for (const k of ['usePending','aiLog']) if (out[k]!=null && !Array.isArray(out[k])) throw Error('前端 '+k+' 格式无效。');
+    return out;
+  };
+  const identity = () => {
+    const ctx=context();
+    if (ctx?.chatId==null || String(ctx.chatId)==='') throw Error('当前对话还没有独立编号，请先创建对话。');
+    const card=ctx.groupId ? 'group:'+ctx.groupId : ctx.characters?.[ctx.characterId]?.avatar;
+    if (!card) throw Error('无法识别角色卡，已停止存档，避免与其他对话混用。');
+    return JSON.stringify([String(card),String(ctx.chatId)]);
+  };
+  const assertScope = scope => { if(identity()!==scope)throw Error('对话已切换，本次存档操作停止。'); };
+  const variables = () => {
+    if (typeof getVariables!=='function' || typeof replaceVariables!=='function') throw Error('酒馆助手变量接口不可用。');
+    return getVariables({type:'chat'}) || {};
+  };
+  const pending = () => variables().hkm_save_restore || null;
+  const flush = async (scope,check) => {
+    assertScope(scope);check();
+    const ctx=context();
+    if(typeof ctx?.saveMetadata!=='function')throw Error('缺少对话保存接口。');
+    await ctx.saveMetadata();assertScope(scope);check();
+  };
+  const messageId = () => {
+    let id;try {if(typeof getCurrentMessageId==='function')id=getCurrentMessageId();}catch(_){}
+    if(id==null || id==='' || Number(id)<0)try{id=window.frameElement?.closest('.mes')?.getAttribute('mesid');}catch(_){}
+    if(id==null || id==='' || !Number.isInteger(Number(id)) || Number(id)<0)throw Error('无法确定当前消息楼层。');
+    return Number(id);
+  };
+  const timestamp = () => new Date().toISOString();
+  const profile = name => ({id:globalThis.crypto?.randomUUID?.() || 'hkm-'+Date.now()+'-'+Math.random().toString(36).slice(2),name:String(name || '未命名存档').trim().slice(0,60),createdAt:timestamp()});
+  const normalize = raw => {
+    const value=copy(raw);
+    if(value.format!==format || value.gameId!==gameId || value.schemaVersion!==1)throw Error('存档格式或版本不受支持；请选择本卡导出的游戏存档 JSON。');
+    if(!object(value.profile) || typeof value.profile.id!=='string' || !value.profile.id || typeof value.profile.name!=='string' || !value.profile.name.trim() || !Number.isFinite(Date.parse(value.profile.createdAt)) || !Number.isFinite(Date.parse(value.savedAt)))throw Error('存档名称或时间信息不完整。');
+    if(!object(value.payload))throw Error('缺少游戏数据。');
+    const migrated=HkmSea.migrate(value.payload.stat_data,value.payload.frontend);
+    return {format,gameId,schemaVersion:1,cardVersion:'v0.1.135',profile:{id:value.profile.id.slice(0,120),name:value.profile.name.trim().slice(0,60),createdAt:value.profile.createdAt},savedAt:value.savedAt,
+      payload:{stat_data:normalizeStat(migrated.stat),frontend:frontend(migrated.front),opening:object(value.payload.opening)?copy(value.payload.opening):{}}};
+  };
+  const parse = text => {
+    if(typeof text!=='string' || new Blob([text]).size>maxBytes)throw Error('存档文件超过 8 MB。');
+    let raw;try{raw=JSON.parse(text);}catch(_){throw Error('文件不是有效的 JSON，原存档未改动。');}
+    return normalize(raw);
+  };
+  const create = (name,stat,front={},opening={}) => normalize({format,gameId,schemaVersion:1,profile:profile(name),savedAt:timestamp(),payload:{stat_data:stat,frontend:front,opening}});
+  const capture = stat => {
+    const vars=variables();
+    if(vars.hkm_save_restore)throw Error('上一次读档尚未完成，请先重试读档。');
+    const p=object(vars.hkm_save_profile)?vars.hkm_save_profile:profile(stat?.主角?.姓名 || '已有游戏');
+    return normalize({format,gameId,schemaVersion:1,profile:p,savedAt:timestamp(),payload:{stat_data:stat,frontend:vars.hkm_frontend_state || {},opening:vars.hkm_opening_profile || {}}});
+  };
+  const storage = () => host().localStorage;
+  const bankKey = scope => 'hkm:sdt:saves:v1:'+encodeURIComponent(scope);
+  const readBank = scope => {
+    assertScope(scope);
+    let text;try{text=storage().getItem(bankKey(scope));}catch(_){throw Error('浏览器禁止使用本地缓存；请导出文件备份。');}
+    if(!text)return {schemaVersion:1,auto:null,slots:Array(5).fill(null)};
+    let bank;try{bank=JSON.parse(text);}catch(_){throw Error('本对话的存档缓存损坏，未覆盖缓存；可以导入备份文件。');}
+    if(bank.schemaVersion!==1 || !Array.isArray(bank.slots) || bank.slots.length!==5)throw Error('本对话的存档缓存版本或快照栏位无效。');
+    try {bank.auto=bank.auto===null?null:normalize(bank.auto);bank.slots=bank.slots.map(save=>save===null?null:normalize(save));}
+    catch(_){throw Error('本对话的存档缓存含无效数据，未覆盖缓存；可以导入备份文件。');}
+    return bank;
+  };
+  const writeBank = (scope,bank) => {
+    assertScope(scope);
+    try{storage().setItem(bankKey(scope),JSON.stringify(bank));}catch(_){throw Error('本地缓存未保存：空间不足或被浏览器禁止；请导出文件备份。');}
+  };
+  const saveLocal = (scope,save,slot=null) => {
+    const value=normalize(save),bank=readBank(scope);
+    if(slot===null)bank.auto=value;
+    else {if(!Number.isInteger(slot)||slot<0||slot>4)throw Error('快照栏位无效。');bank.slots[slot]=value;}
+    writeBank(scope,bank);return value;
+  };
+  const readGame = async target => {
+    const scope={type:'message',message_id:target};
+    if(typeof Mvu!=='undefined' && typeof Mvu?.getMvuData==='function' && typeof Mvu?.replaceMvuData==='function')return {data:copy(await Mvu.getMvuData(scope)),write:data=>Mvu.replaceMvuData(data,scope)};
+    if(typeof getVariables==='function' && typeof replaceVariables==='function')return {data:copy(await getVariables(scope)),write:data=>replaceVariables(data,scope)};
+    throw Error('缺少消息变量读写接口。');
+  };
+  const rebind = save => {
+    const value=normalize(save),front=value.payload.frontend,ctx=context();
+    const count=(ctx?.chat || []).filter(x=>x?.is_user===true || x?.role==='user').length;
+    const last=(ctx?.chat?.length || 0)-1;
+    const oldCount=Number(front.dialogue?.count) || 0;
+    for(const buff of Object.values(front.run?.waterBuffs || {}))buff.expiresAt=count+Math.max(0,(Number(buff.expiresAt) || 0)-oldCount);
+    front.dialogue={count,previous:count,updatedAt:Date.now()};front.replayAfter=last;
+    if(front.run)front.run.startMessageId=last;
+    for(const row of front.usePending || [])row.roundKey='R'+messageId();
+    return value;
+  };
+  const restore = async (raw,{scope=identity(),target=messageId(),check=()=>{}}={}) => {
+    const save=rebind(raw);
+    const guard=()=>{assertScope(scope);check();if(messageId()!==target)throw Error('消息楼层已变化，读档停止。');};
+    guard();
+    const existing=variables().hkm_save_restore;
+    if(existing && (existing.scope!==scope || existing.target!==target || existing.save.profile.id!==save.profile.id))throw Error('有未完成的读档，请先恢复它。');
+    if(!existing){
+      const vars=variables();vars.hkm_save_restore={scope,target,save};replaceVariables(vars,{type:'chat'});
+      await flush(scope,guard);
+    }
+    const tx=variables().hkm_save_restore;
+    if(!tx || tx.scope!==scope || tx.target!==target)throw Error('读档记录发生变化，已停止。');
+    const intended=normalize(tx.save);
+    const row=await readGame(target);guard();
+    const stat=copy(intended.payload.stat_data);
+    const next={...row.data,stat_data:HkmStateBoundary.project(stat,intended.payload.frontend),hkm_game_data:copy(stat)};
+    try{await row.write(next);}catch(error){guard();const reread=await readGame(target);guard();if(JSON.stringify(reread.data.hkm_game_data)!==JSON.stringify(stat))throw error;}
+    guard();
+    const verified=await readGame(target);guard();
+    if(roots.some(k=>JSON.stringify(verified.data.hkm_game_data?.[k])!==JSON.stringify(stat[k])) || JSON.stringify(verified.data.stat_data)!==JSON.stringify(next.stat_data))throw Error('读档变量没有完整写入，保留读档记录供重试。');
+    const vars=variables();
+    vars.hkm_frontend_state={...copy(intended.payload.frontend),gameData:copy(stat)};vars.hkm_save_profile=copy(intended.profile);
+    vars.hkm_opening_profile=copy(intended.payload.opening);vars.hkm_opening_game_rules=copy(intended.payload.stat_data.游戏规则);
+    replaceVariables(vars,{type:'chat'});await flush(scope,guard);
+    const finalVars=variables();delete finalVars.hkm_save_restore;delete finalVars.hkm_tutorial_pending;delete finalVars.hkm_opening_launch;
+    replaceVariables(finalVars,{type:'chat'});
+    try{await flush(scope,guard);}catch(error){
+      if(identity()===scope){const retry=variables();retry.hkm_save_restore=tx;replaceVariables(retry,{type:'chat'});}
+      throw error;
+    }
+    guard();return intended;
+  };
+  const recover = async options => {
+    const tx=pending();if(!tx)return false;
+    if(tx.scope!==identity() || tx.target!==messageId())throw Error('未完成读档属于另一个消息楼层，请回到原楼层完成读档。');
+    return restore(tx.save,{...options,scope:tx.scope,target:tx.target});
+  };
+  const rememberProfile = save => {
+    const vars=variables();if(!vars.hkm_save_profile){vars.hkm_save_profile=copy(save.profile);replaceVariables(vars,{type:'chat'});}
+  };
+  const summary = save => save ? save.profile.name+' · '+new Date(save.savedAt).toLocaleString()+' · '+save.payload.stat_data.场景.地图+' / '+save.payload.stat_data.场景.区域+' · '+save.payload.stat_data.统计信息.哈基币+' 哈基币' : '空栏位';
+  const download = raw => {
+    const save=normalize(raw),url=URL.createObjectURL(new Blob([JSON.stringify(save,null,2)+'\n'],{type:'application/json'}));
+    const a=document.createElement('a');a.href=url;a.download=save.profile.name.replace(/[<>:"/\\|?*\x00-\x1f]/g,'_')+'-'+save.savedAt.replace(/[:.]/g,'-')+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  };
+  const mount = ({capture:captureCurrent,apply,writable=()=>true,dispose=()=>{}}) => {
+    const style=document.createElement('style');style.textContent='.hkm-save-ui{--hkm-save-line:#454d3e;--hkm-save-accent:#b2bf80;box-sizing:border-box;width:min(680px,calc(100% - 24px));max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable;border:1px solid #68775a;border-radius:5px;background:#1b1f19;color:#e7e9df;padding:16px;font:14px/1.55 system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;color-scheme:dark;box-shadow:0 20px 70px #0008}.hkm-save-ui[open]{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.hkm-save-ui::backdrop{background:rgba(5,7,4,.78)}.hkm-save-ui *{box-sizing:border-box;min-width:0;overflow-wrap:anywhere}.hkm-save-ui>h2,.hkm-save-ui>p,.hkm-save-ui>div,.hkm-save-ui>input{grid-column:1/-1}.hkm-save-ui h2{grid-row:1;margin:0;padding-right:76px;font-size:20px;line-height:44px;color:#e7e9df}.hkm-save-ui p{margin:4px 0 10px;color:#aab1a3;font-size:13px}.hkm-save-ui button{min-height:44px;margin:0;padding:8px 11px;border:1px solid #647252;border-radius:4px;background:#2d3526;color:#e6ecd7;font:650 14px/1.4 system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;cursor:pointer;transition:background .12s,border-color .12s}.hkm-save-ui>button:last-child{grid-column:3;grid-row:1;justify-self:end;align-self:start;position:sticky;top:0;z-index:1;min-width:64px;background:#252b21}.hkm-save-ui button:disabled{opacity:.4;cursor:default}.hkm-save-ui button:focus-visible{outline:2px solid var(--hkm-save-accent);outline-offset:2px}.hkm-save-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:12px 0;border-top:1px solid var(--hkm-save-line)}.hkm-save-row>strong,.hkm-save-row>p{grid-column:1/-1}.hkm-save-row>strong{font-size:13px;color:var(--hkm-save-accent)}.hkm-save-row>p{margin:0 0 3px;line-height:1.6}.hkm-save-ui [data-error="true"]{color:#efb698}.hkm-save-preview{border:1px solid #8b7148;border-left:3px solid #d5af70;padding:12px;border-radius:3px;margin:4px 0;background:#29271e}.hkm-save-preview>strong{display:block;color:#e2c798}.hkm-save-preview>button{margin:5px 7px 0 0}.hkm-save-ui [hidden]{display:none!important}@media(hover:hover){.hkm-save-ui button:hover:not(:disabled){border-color:var(--hkm-save-accent);background:#3d4931}}@media(max-width:480px){.hkm-save-ui{padding:12px}.hkm-save-ui[open]{grid-template-columns:1fr}.hkm-save-ui>button:last-child{grid-column:1;grid-row:1}.hkm-save-ui>button:not(:last-child){grid-column:1}.hkm-save-row{grid-template-columns:repeat(2,minmax(0,1fr))}.hkm-save-row>button:last-child{grid-column:1/-1}.hkm-save-preview>button{width:100%;margin:6px 0 0}}@media(prefers-reduced-motion:reduce){.hkm-save-ui button{transition:none}}';document.head.append(style);
+    const dialog=document.createElement('dialog');dialog.className='hkm-save-ui';dialog.setAttribute('aria-label','游戏存档管理');
+    const el=(tag,text)=>{const n=document.createElement(tag);if(text)n.textContent=text;return n;};
+    const title=el('h2','游戏存档'),notice=el('p','存档保存在当前浏览器，仅恢复本对话的游戏进度，不回退聊天正文。');
+    const status=el('p');status.setAttribute('aria-live','polite');
+    const list=el('div'),preview=el('div');preview.className='hkm-save-preview';preview.hidden=true;
+    let scope=null,busy=false,selected=null,opener=null;
+    const report=(text,error=false)=>{status.textContent=text;status.dataset.error=String(error);};
+    const task=fn=>async()=>{if(busy)return;busy=true;try{if(!writable())throw Error('请使用当前对话的最新楼层。');assertScope(scope);await fn();}catch(e){report(e.message,true);}finally{busy=false;render();}};
+    const button=(text,fn)=>{const b=el('button',text);b.type='button';b.addEventListener('click',task(fn));return b;};
+    const stage=raw=>{selected=normalize(raw);preview.replaceChildren(el('strong','将读取：'+summary(selected)),el('p','这会替换当前游戏进度，聊天记录和其他扩展数据保持原样。'),button('确认读档',async()=>{const restored=await apply(selected);assertScope(scope);preview.hidden=true;selected=null;try{const fresh=restored || await captureCurrent();assertScope(scope);saveLocal(scope,fresh);report('读档完成。可以从酒馆输入框继续游戏。');}catch(e){report('游戏读档已完成，但缓存未写入：'+e.message,true);}}),button('取消读档',()=>{selected=null;preview.hidden=true;}));preview.hidden=false;};
+    const file=el('input');file.type='file';file.accept='.json,application/json';file.hidden=true;file.setAttribute('aria-label','选择游戏存档文件');
+    file.addEventListener('change',task(async()=>{const f=file.files?.[0];file.value='';if(!f)return;if(f.size>maxBytes)throw Error('存档文件超过 8 MB。');const text=await f.text();assertScope(scope);stage(parse(text));report('文件校验通过，请确认是否读取。');}));
+    const render=()=>{
+      list.replaceChildren();if(!scope)return;
+      let bank;try{assertScope(scope);bank=readBank(scope);}catch(e){report(e.message,true);return;}
+      const auto=el('div');auto.className='hkm-save-row';auto.append(el('strong','自动存档'),el('p',bank.auto?summary(bank.auto):'暂无自动存档'));
+      const load=button('读取自动存档',()=>stage(bank.auto));load.disabled=!bank.auto;auto.append(load);list.append(auto);
+      for(let i=0;i<5;i++){
+        const row=el('div');row.className='hkm-save-row';row.append(el('strong','快照 '+(i+1)),el('p',bank.slots[i]?summary(bank.slots[i]):'空栏位'));
+        const save=button('保存快照 '+(i+1),async()=>{
+          const next=await captureCurrent();assertScope(scope);
+          if(bank.slots[i]){selected=null;preview.replaceChildren(el('p','覆盖快照 '+(i+1)+'：'+summary(bank.slots[i])+'？'),button('确认覆盖',()=>{saveLocal(scope,next,i);preview.hidden=true;report('快照 '+(i+1)+' 已保存。');}),button('取消覆盖',()=>{preview.hidden=true;}));preview.hidden=false;return;}
+          saveLocal(scope,next,i);report('快照 '+(i+1)+' 已保存。');
+        });
+        const read=button('读取快照 '+(i+1),()=>stage(bank.slots[i]));read.disabled=!bank.slots[i];
+        const exp=button('导出快照 '+(i+1),()=>download(bank.slots[i]));exp.disabled=!bank.slots[i];row.append(save,read,exp);list.append(row);
+      }
+    };
+    dialog.append(title,notice,
+      button('立即保存',async()=>{const save=await captureCurrent();assertScope(scope);saveLocal(scope,save);report('当前游戏已保存到本对话的自动存档。');}),
+      button('导出当前存档',async()=>{const save=await captureCurrent();assertScope(scope);download(save);report('存档文件已导出。');}),
+      button('导入文件读档',()=>file.click()),file,preview,status,list);
+    const close=el('button','关闭');close.type='button';close.addEventListener('click',()=>{if(!busy)dialog.close();});dialog.append(close);
+    dialog.addEventListener('cancel',e=>{if(busy)e.preventDefault();});dialog.addEventListener('close',()=>opener?.focus?.());document.body.append(dialog);
+    dispose(()=>{dialog.remove();style.remove();});
+    return {get busy(){return busy;},open(){try{scope=identity();opener=document.activeElement;selected=null;preview.hidden=true;report('');render();if(!dialog.open)dialog.showModal();}catch(e){report(e.message,true);if(!dialog.open)dialog.showModal();}},report,render,dialog};
+  };
+  return {format,gameId,roots,migrateGoogle,defaults,copy,identity,assertScope,messageId,context,variables,pending,profile,normalize,parse,create,capture,saveLocal,readBank,bankKey,restore,recover,rememberProfile,summary,download,mount,maxBytes};
+})();
+
+  const root=document.querySelector('[data-hkm-opening-root="v0.1.104"]');
+  if(!root || root.dataset.bound)return;root.dataset.bound='true';
+  const form=root.querySelector('form'),submit=root.querySelector('[data-hkm-opening-submit]'),status=root.querySelector('[data-hkm-opening-status]'),preview=root.querySelector('[data-hkm-opening-preview]'),fallback=root.querySelector('[data-hkm-opening-fallback]');
+  let owner=null,submitting=false,active=null,resumeReady=false,openingMessageCreated=false;
+  const openingAwaiting = () => {
+    if (openingMessageCreated) return true;
+    try {
+      const id=HkmSave.messageId(),chat=HkmSave.context()?.chat;
+      return Array.isArray(chat) && chat.some((row,index)=>index>id && row?.is_user===true);
+    } catch (_) { return false; }
+  };
+  const openingGuard = event => {
+    if ((!submitting && !openingAwaiting()) || event.target?.ownerDocument!==document) return;
+    event.preventDefault();event.stopImmediatePropagation();
+  };
+  for (const type of ['click','pointerdown','keydown','input','change','submit']) document.addEventListener(type,openingGuard,true);
+  const report=(text,error=false)=>{status.textContent=text;status.dataset.error=String(error);};
+  const latest=()=>{
+    try {
+      const mes=window.frameElement?.closest('.mes'),id=Number(mes?.getAttribute('mesid'));
+      const ids=[...window.parent.document.querySelectorAll('#chat .mes[is_user="false"]')].map(x=>Number(x.getAttribute('mesid'))).filter(Number.isInteger);
+      return !!mes && ids.length>0 && id===Math.max(...ids);
+    }catch(_){return false;}
+  };
+  const check=()=>{if(!owner)owner=HkmSave.identity();HkmSave.assertScope(owner);if(!latest())throw Error('这是旧开局页，请使用最新消息里的存档按钮。');};
+  const currentStat=async()=>{
+    const scope={type:'message',message_id:HkmSave.messageId()};
+    if(typeof Mvu!=='undefined' && typeof Mvu?.getMvuData==='function'){const data=await Mvu.getMvuData(scope);return HkmStateBoundary.compose(data?.stat_data,data?.hkm_game_data || HkmSave.variables().hkm_frontend_state?.gameData,HkmSave.variables().hkm_frontend_state);}
+    if(typeof getVariables==='function'){const data=getVariables(scope);return HkmStateBoundary.compose(data?.stat_data,data?.hkm_game_data || HkmSave.variables().hkm_frontend_state?.gameData,HkmSave.variables().hkm_frontend_state);}
+    throw Error('酒馆助手变量接口不可用。');
+  };
+  const HkmOpeningDraft = (() => {
+    const limits={saveName:60,name:40,gender:3,appearance:300,personality:180,aiMaleProbability:3};
+    const key=scope=>'hkm.opening.draft.v2:'+scope;
+    const storage=()=>{try{return window.parent?.localStorage || window.localStorage;}catch(_){return window.localStorage;}};
+    const capture=form=>{
+      const fields={};for(const [name,max] of Object.entries(limits))fields[name]=String(form.elements.namedItem(name)?.value || '').slice(0,max);
+      fields.keepInventory=form.elements.namedItem('keepInventory')?.checked===true;
+      fields.femaleFutanari=form.elements.namedItem('femaleFutanari')?.checked===true;
+      return {schemaVersion:2,fields};
+    };
+    const save=(scope,form)=>storage().setItem(key(scope),JSON.stringify(capture(form)));
+    const restore=(scope,form)=>{
+      const text=storage().getItem(key(scope));if(!text)return false;
+      const value=JSON.parse(text);
+      if(value?.schemaVersion!==2 || !value.fields || Array.isArray(value.fields))throw Error('开局填写缓存格式无效。');
+      for(const [name,max] of Object.entries(limits))if(typeof value.fields[name]!=='string' || value.fields[name].length>max)throw Error('开局填写缓存格式无效。');
+      if(typeof value.fields.keepInventory!=='boolean')throw Error('开局填写缓存格式无效。');
+      if(typeof value.fields.femaleFutanari!=='boolean')throw Error('开局填写缓存格式无效。');
+      for(const name of Object.keys(limits))form.elements.namedItem(name).value=value.fields[name];
+      form.elements.namedItem('keepInventory').checked=value.fields.keepInventory;
+      form.elements.namedItem('femaleFutanari').checked=value.fields.femaleFutanari;
+      if(!['女性','男性'].includes(value.fields.gender))throw Error('开局缓存中的性别已不支持，请重新选择男性或女性。');
+      return true;
+    };
+    return {capture,save,restore,key};
+  })();
+
+  const draft=()=>{const d=new FormData(form);return {saveName:String(d.get('saveName') || '').trim(),protagonist:{name:String(d.get('name') || '').trim(),gender:String(d.get('gender') || '').trim(),appearance:String(d.get('appearance') || '').trim(),personality:String(d.get('personality') || '').trim()},gameRules:{keepInventory:d.get('keepInventory')==='on',aiMaleProbability:Math.max(0,Math.min(100,Math.floor(Number(d.get('aiMaleProbability')) || 0))),femaleFutanari:d.get('femaleFutanari')==='on'}};};
+  const update=()=>{
+    const profile=HkmSave.variables().hkm_save_profile;
+    active=profile && typeof profile.id==='string' && profile.id.trim() && typeof profile.name==='string' && profile.name.trim() ? profile : null;
+    const canResume=resumeReady && !!active;
+    for(const node of root.querySelectorAll('[data-hkm-create-fields]')){node.hidden=canResume;node.disabled=canResume;}
+    submit.textContent=canResume?'继续游戏':'创建存档并开始游戏';
+    if(canResume){preview.textContent='当前存档：'+active.name+'。已读取的游戏进度会用于接下来的游玩。';return;}
+    if(active){preview.textContent='检测到可读取存档“'+active.name+'”；点击“读取存档”可恢复，当前仍可创建新存档。';return;}
+    const d=draft();preview.textContent=(d.saveName || '未命名存档')+' · '+(d.protagonist.gender || '请选择性别')+'主人公 · 中转站 · 100 哈基币 · 历史对局 0 · AI男性概率 '+d.gameRules.aiMaleProbability+'%';
+  };
+  const persistOpeningMeta=async change=>{
+    check();const vars=HkmSave.variables();change(vars);replaceVariables(vars,{type:'chat'});
+    const context=HkmSave.context();if(typeof context?.saveMetadata!=='function')throw Error('开局状态未能保存。');
+    await context.saveMetadata();check();
+  };
+  const profileLines=protagonist=>[
+    ['主人公名称',protagonist?.name],['主人公性别',protagonist?.gender],
+    ['外貌与体态',protagonist?.appearance],['地球经历',protagonist?.personality]
+  ].filter(([,value])=>typeof value==='string' && value.trim()).map(([label,value])=>label+'：'+value);
+  let pendingRunContextReceipt=null;
+  const newOpeningPrompt=protagonist=>HkmFrontendMessage.wrap(HkmFrontendMessage.action(['<HkmOpeningProfile>',...profileLines(protagonist),'开场位置：哈基米空间—中转站','</HkmOpeningProfile>',(protagonist.name || '玩家')+'被哈基米空间选中成为了一名哈基米游戏的玩家，请你合理地撰写开场白。'].join('\n'),'opening'));
+  const resumePrompt=stat=>{
+    const payload=HkmSave.capture(stat).payload,vars=payload.stat_data,front=payload.frontend;
+    const protagonist={...payload.opening.protagonist,name:vars.主角.姓名,gender:vars.主角.性别};
+    const initial=HkmRunContext.peek(vars,front,owner,vars.装备 || {});
+    pendingRunContextReceipt=initial.receipt;
+    const map=vars.场景.地图;
+    return HkmFrontendMessage.wrap(HkmFrontendMessage.action([
+      '<HkmOpeningProfile>',...profileLines(protagonist),'当前场景：'+map+'—'+vars.场景.区域,'</HkmOpeningProfile>',
+      initial.text,
+      '请你根据这些信息，合理地创作开场白',
+      '从当前场景衔接已有进度，继续当前剧情；人物属性、携带物品、任务与游戏进度以以上信息为准。'
+    ].filter(Boolean).join('\n'),'opening'));
+  };
+  const saveUI=HkmSave.mount({writable:()=>latest() && !submitting && !openingAwaiting(),capture:async()=>{check();const stat=await currentStat();check();if(!stat.主角 || !stat.场景)throw Error('还没有游戏进度，请先创建或读取存档。');const save=HkmSave.capture(stat);HkmSave.rememberProfile(save);return save;},apply:async save=>{check();if(submitting)throw Error('正在开始游戏，请稍后读档。');const restored=await HkmSave.restore(save,{scope:owner,check});resumeReady=true;update();report('存档已读取。点击继续游戏，或从酒馆输入框继续。');return restored;}});
+  root.querySelector('[data-hkm-opening-load]').addEventListener('click',()=>saveUI.open());
+  const cacheDraft=()=>{try{check();if(!resumeReady)HkmOpeningDraft.save(owner,form);update();}catch(e){report(e.message,true);}};
+  form.addEventListener('input',cacheDraft);form.addEventListener('change',cacheDraft);
+  const send = async message => {
+    if(typeof createChatMessages!=='function' || typeof triggerSlash!=='function')throw Error('酒馆助手消息接口不可用。');
+    check();
+    await createChatMessages([{role:'user',message,data:{hkm_opening:{schemaVersion:2,saveId:HkmSave.variables().hkm_save_profile.id}}}]);
+    openingMessageCreated=true;root.inert=true;
+    if(pendingRunContextReceipt)await persistOpeningMeta(vars=>{const front=vars.hkm_frontend_state || {};if(HkmRunContext.acknowledge(front,pendingRunContextReceipt,owner))vars.hkm_frontend_state=front;});
+    check();return true;
+  };
+  form.addEventListener('submit',async event=>{
+    event.preventDefault();if(submitting)return;
+    let created=false,message='',normalOpening=false;
+    try {
+      check();
+      if(HkmSave.pending())await HkmSave.recover({check});
+      if(!(resumeReady && active)){
+        if(!form.checkValidity()){form.reportValidity();report(form.elements.namedItem('gender').validity.valid?'请填写存档名称。':'请选择男性或女性。',true);return;}
+        const d=draft();if(!d.saveName)throw Error('存档名称不能只填空格。');
+        const stat=HkmSave.defaults();stat.主角.姓名=d.protagonist.name || '未命名';stat.主角.性别=d.protagonist.gender;stat.统计信息.哈基币=100;stat.游戏规则=d.gameRules;
+        const save=HkmSave.create(d.saveName,stat,{version:19,rules:d.gameRules,rulesInitialized:true,run:null},d);
+        submitting=true;root.inert=true;submit.disabled=true;submit.setAttribute('aria-busy','true');
+        await HkmSave.restore(save,{scope:owner,check});
+        await persistOpeningMeta(vars=>{vars.hkm_opening_launch={saveId:save.profile.id,mode:'new'};});update();
+        try{HkmSave.saveLocal(owner,save);}catch(e){report('新档已创建，但本地缓存未保存：'+e.message,true);}
+        message=newOpeningPrompt(d.protagonist);normalOpening=true;
+      }else{
+        submitting=true;root.inert=true;submit.disabled=true;submit.setAttribute('aria-busy','true');
+        const stat=await currentStat();check();
+        const vars=HkmSave.variables();
+        normalOpening=vars.hkm_opening_launch?.mode==='new' && vars.hkm_opening_launch.saveId===vars.hkm_save_profile?.id;
+        message=normalOpening ? newOpeningPrompt(vars.hkm_opening_profile.protagonist):resumePrompt(stat);
+      }
+      const profile=HkmSave.variables().hkm_save_profile;
+      const already=(HkmSave.context()?.chat || []).some(row=>row?.data?.hkm_opening?.saveId===profile.id);
+      if(already){report('本存档已经开始，请从酒馆输入框继续游戏。');return;}
+      fallback.value=message;fallback.hidden=true;
+      created=await send(message);
+      if(created && normalOpening)await persistOpeningMeta(vars=>{vars.hkm_tutorial_pending={saveId:vars.hkm_save_profile.id};});
+      try{await triggerSlash('/trigger');check();report('游戏消息已创建，正在等待回复。');}catch(e){report('游戏消息已创建，生成未完成：'+e.message+'。请在原对话继续生成，无需重复创建存档。',true);}
+    }catch(e){report((HkmSave.pending()?'读档未完成，刷新后会重试恢复。':'操作未完成。')+e.message,true);if(message && !created){fallback.value=message;fallback.hidden=false;}}
+    finally{if(!created && !openingMessageCreated && !openingAwaiting()){submitting=false;root.inert=false;submit.disabled=false;}submit.removeAttribute('aria-busy');}
+  });
+  try{check();if(HkmSave.pending())await HkmSave.recover({check});if(!resumeReady)HkmOpeningDraft.restore(owner,form);update();if(openingAwaiting()){root.inert=true;report('等待回复，当前前端已锁定。');}}catch(e){report(e.message,true);}
+  window.addEventListener('pagehide',()=>{form.removeEventListener('input',cacheDraft);form.removeEventListener('change',cacheDraft);saveUI.dialog.remove();for(const type of ['click','pointerdown','keydown','input','change','submit'])document.removeEventListener(type,openingGuard,true);},{once:true});
+})();
+</script>
+</body>
+</html>
+
+```
