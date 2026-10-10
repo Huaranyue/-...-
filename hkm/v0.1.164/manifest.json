@@ -1,0 +1,20 @@
+{
+  "version": "0.1.164",
+  "entry": "main.mjs",
+  "modules": [
+    "runtime.mjs",
+    "game-data.mjs",
+    "equipment.mjs"
+  ],
+  "stylesheet": "hud.css",
+  "schema": "schema.js",
+  "worldbook": "collection-worldbook.json",
+  "changedWorldbookEntries": [
+    10
+  ],
+  "baseline": "d9c5cc105c1bc6ce4bedb4852092e5ae53a2e45f",
+  "worldbooks": [
+    "collection-worldbook.json",
+    "map-worldbook.json"
+  ]
+}
